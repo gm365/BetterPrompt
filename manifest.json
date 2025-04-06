@@ -1,0 +1,50 @@
+{
+    "manifest_version": 3,
+    "name": "Better Prompt",
+    "version": "1.5.0",
+    "description": "一键智能优化Prompt提示词，让AI指令更清晰有效，帮您获取更精准、更有价值的回答。",
+    "permissions": [
+        "storage",
+        "activeTab",
+        "scripting"
+    ],
+    "host_permissions": [
+        "<all_urls>",
+        "https://generativelanguage.googleapis.com/*"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content_script.js"
+            ],
+            "run_at": "document_idle"
+        }
+    ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+            "128": "icons/icon128.png"
+        },
+        "default_title": "Better Prompt"
+    },
+    "icons": {
+        "128": "icons/icon128.png"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "prompt_optimizer.html",
+                "prompt_optimizer.js"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ]
+}

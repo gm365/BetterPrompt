@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Better Prompt - Prompt 优化器</title>
+        <meta charset="UTF-8">
+        <style>
+            body {
+                font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+                padding: 20px;
+                background-color: #f8f9fa;
+                color: #333;
+                margin: 0;
+                position: relative;
+                overflow-x: hidden;
+            }
+
+            header {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+
+            h1 {
+                font-size: 28px;
+                margin: 0 0 16px 0;
+                color: #1a73e8;
+                font-weight: 600;
+            }
+
+            .description {
+                color: #666;
+                font-size: 16px;
+                max-width: 800px;
+                margin: 0 auto 20px;
+                line-height: 1.5;
+            }
+
+            .container {
+                display: flex;
+                gap: 20px;
+                max-width: 1200px;
+                margin: 0 auto;
+                height: calc(100vh - 200px);
+                min-height: 500px;
+            }
+
+            .panel {
+                flex: 1;
+                background-color: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+                display: flex;
+                flex-direction: column;
+            }
+
+            .panel-title {
+                font-size: 18px;
+                font-weight: 600;
+                margin-bottom: 15px;
+                color: #1a73e8;
+                display: flex;
+                align-items: center;
+            }
+
+            .panel-icon {
+                margin-right: 8px;
+                font-size: 20px;
+            }
+
+            textarea {
+                flex: 1;
+                padding: 15px;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+                font-size: 16px;
+                line-height: 1.5;
+                resize: none;
+                font-family: inherit;
+                margin-bottom: 15px;
+            }
+
+            textarea:focus {
+                outline: none;
+                border-color: #1a73e8;
+                box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+            }
+
+            button {
+                background-color: #1a73e8;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                padding: 10px 15px;
+                font-size: 16px;
+                cursor: pointer;
+                font-weight: 500;
+                transition: background-color 0.2s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+            }
+
+            button:hover {
+                background-color: #1765cc;
+            }
+
+            button:disabled {
+                background-color: #ccc;
+                cursor: not-allowed;
+            }
+
+            .button-container {
+                display: flex;
+                gap: 10px;
+            }
+
+            .copy-button {
+                background-color: #34a853;
+            }
+
+            .copy-button:hover {
+                background-color: #2d914a;
+            }
+
+            .model-info {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+                color: #666;
+                font-size: 14px;
+            }
+
+            .model-selector {
+                padding: 6px 10px;
+                border-radius: 4px;
+                border: 1px solid #ddd;
+                font-size: 14px;
+            }
+
+            .prompt-selector {
+                padding: 6px 10px;
+                border-radius: 4px;
+                border: 1px solid #ddd;
+                font-size: 14px;
+            }
+
+            .loading-indicator {
+                display: none;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                padding: 10px;
+                background-color: rgba(255, 255, 255, 0.9);
+                border-radius: 6px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                color: #1a73e8;
+                font-weight: 500;
+            }
+
+            .loading-indicator.show {
+                display: flex;
+            }
+
+            .spinner {
+                width: 20px;
+                height: 20px;
+                border: 3px solid rgba(26, 115, 232, 0.3);
+                border-radius: 50%;
+                border-top-color: #1a73e8;
+                animation: spin 1s ease-in-out infinite;
+            }
+
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .toast-notification {
+                position: fixed;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: rgba(0, 0, 0, 0.75);
+                color: white;
+                padding: 10px 20px;
+                border-radius: 20px;
+                font-size: 14px;
+                font-weight: 500;
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s ease-in-out, top 0.3s ease-in-out;
+                white-space: nowrap;
+                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            }
+
+            .toast-notification.show {
+                opacity: 1;
+                top: 20px;
+            }
+
+            .toast-notification.success {
+                background-color: #4CAF50;
+            }
+
+            .toast-notification.error {
+                background-color: #f44336;
+            }
+
+            .toast-notification.info {
+                background-color: #2196F3;
+            }
+
+            .footer {
+                text-align: center;
+                margin-top: 30px;
+                color: #666;
+                font-size: 14px;
+            }
+
+            @media (max-width: 768px) {
+                .container {
+                    flex-direction: column;
+                    height: auto;
+                }
+            }
+        </style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    </head>
+
+    <body>
+        <header>
+            <h1>Better Prompt - Prompt 优化器</h1>
+            <div class="description">在左侧输入您的原始提示词，点击优化按钮后，右侧将显示优化后的结果。三连击空格功能适用于网页中的输入框，而这个页面专为直接编辑和优化提示词而设计。</div>
+        </header>
+
+        <div class="container">
+            <div class="panel">
+                <div class="panel-title">
+                    <span class="material-icons panel-icon">edit</span>原始提示词
+                </div>
+                <textarea id="originalPrompt" placeholder="在此输入您的原始提示词..."></textarea>
+                <button id="optimizeButton" class="optimize-button">
+                    <span class="material-icons">auto_fix_high</span>优化提示词
+                </button>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title">
+                    <span class="material-icons panel-icon">psychology</span>优化结果
+                </div>
+                <div class="model-info">
+                    <div>
+                        <span>优化模板:</span>
+                        <select id="promptSelector" class="prompt-selector">
+                            <option value="default">默认模板</option>
+                            <option value="concise">简洁模板</option>
+                            <option value="detailed">扩展模板</option>
+                            <option value="custom">自定义模板</option>
+                        </select>
+                    </div>
+                    <div>
+                        <span>使用模型:</span>
+                        <select id="modelSelector" class="model-selector">
+                            <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
+                            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                        </select>
+                    </div>
+                </div>
+                <textarea id="optimizedPrompt" placeholder="优化后的提示词将显示在这里..." readonly></textarea>
+                <div class="button-container">
+                    <button id="copyButton" class="copy-button" disabled>
+                        <span class="material-icons">content_copy</span>复制结果
+                    </button>
+                    <button id="clearButton">
+                        <span class="material-icons">clear</span>清空
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading-indicator" id="loadingIndicator">
+            <div class="spinner"></div>
+            <span>正在优化提示词...</span>
+        </div>
+
+        <div class="footer">BetterPrompt - 让您的提示词更高效</div>
+
+        <script src="prompt_optimizer.js"></script>
+    </body>
+
+</html>

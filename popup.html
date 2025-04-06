@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Better Prompt</title>
+        <meta charset="UTF-8">
+        <style>
+            body {
+                font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+                padding: 16px;
+                width: 360px;
+                background-color: #f8f9fa;
+                color: #333;
+                margin: 0;
+                position: relative;
+                overflow-x: hidden;
+            }
+
+            h1 {
+                font-size: 22px;
+                margin: 0 0 16px 0;
+                color: #1a73e8;
+                text-align: center;
+                font-weight: 600;
+            }
+
+            .section {
+                background-color: white;
+                padding: 16px;
+                border-radius: 10px;
+                margin-bottom: 16px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+                transition: all 0.2s ease;
+            }
+
+            .section:hover {
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+            }
+
+            .section-title {
+                font-size: 15px;
+                font-weight: 600;
+                margin-bottom: 12px;
+                color: #444;
+                display: flex;
+                align-items: center;
+            }
+
+            .section-icon {
+                margin-right: 8px;
+                color: #1a73e8;
+                font-size: 18px;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 6px;
+                font-weight: 500;
+                color: #555;
+                font-size: 14px;
+            }
+
+            input[type="password"],
+            input[type="text"],
+            textarea,
+            select {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 12px;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+                box-sizing: border-box;
+                font-size: 14px;
+                transition: border-color 0.2s;
+            }
+
+            input:focus,
+            textarea:focus,
+            select:focus {
+                outline: none;
+                border-color: #1a73e8;
+                box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+            }
+
+            textarea {
+                height: 90px;
+                resize: vertical;
+                font-family: inherit;
+            }
+
+            button {
+                width: 100%;
+                padding: 10px 15px;
+                background-color: #1a73e8;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: 500;
+                font-size: 15px;
+                transition: background-color 0.2s;
+            }
+
+            button:hover {
+                background-color: #1765cc;
+            }
+
+            .success {
+                background-color: #e6f4ea;
+                color: #137333;
+            }
+
+            .error {
+                background-color: #fce8e6;
+                color: #c5221f;
+            }
+
+            .info-link {
+                font-size: 13px;
+                color: #1a73e8;
+                text-decoration: none;
+                display: inline-block;
+                margin-top: 6px;
+            }
+
+            .info-link:hover {
+                text-decoration: underline;
+            }
+
+            #show-key-container {
+                display: flex;
+                align-items: center;
+                margin-bottom: 8px;
+            }
+
+            #show-key-label {
+                display: flex;
+                align-items: center;
+                font-size: 13px;
+                font-weight: normal;
+            }
+
+            #show-key-label input {
+                margin-right: 6px;
+            }
+
+            .preset-item {
+                margin-bottom: 8px;
+            }
+
+            .shortcut-key {
+                display: inline-block;
+                background-color: #f1f3f4;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                padding: 3px 6px;
+                font-family: monospace;
+                margin: 0 2px;
+                font-size: 12px;
+            }
+
+            .shortcut-info {
+                padding: 12px;
+                background-color: #e8f0fe;
+                border-radius: 6px;
+                font-size: 14px;
+                line-height: 1.5;
+                display: flex;
+                align-items: center;
+            }
+
+            .shortcut-icon {
+                margin-right: 10px;
+                color: #1a73e8;
+                font-size: 20px;
+            }
+
+            #currentPrompt {
+                font-size: 13px;
+                padding: 10px;
+                background: #f5f7fa;
+                border-radius: 6px;
+                margin-bottom: 12px;
+                max-height: 80px;
+                overflow-y: auto;
+                border: 1px solid #eaeaea;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+            }
+
+            .footer {
+                font-size: 12px;
+                text-align: center;
+                margin-top: 12px;
+                color: #666;
+            }
+
+            .model-badge {
+                display: inline-block;
+                font-size: 11px;
+                padding: 2px 6px;
+                border-radius: 10px;
+                background-color: #e8f0fe;
+                color: #1a73e8;
+                margin-left: 6px;
+                font-weight: normal;
+            }
+
+            .two-column {
+                display: flex;
+                gap: 12px;
+            }
+
+            .two-column>div {
+                flex: 1;
+            }
+
+            .toast-notification {
+                position: fixed;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: rgba(0, 0, 0, 0.75);
+                color: white;
+                padding: 10px 20px;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: 500;
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s ease-in-out, top 0.3s ease-in-out;
+                white-space: nowrap;
+                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            }
+
+            .toast-notification.show {
+                opacity: 1;
+                top: 20px;
+            }
+
+            .toast-notification.success {
+                background-color: #4CAF50;
+            }
+
+            .toast-notification.error {
+                background-color: #f44336;
+            }
+
+            .toast-notification.info {
+                background-color: #2196F3;
+            }
+
+            .toast-notification.warning {
+                background-color: #ff9800;
+            }
+
+            /* 优化器页面入口按钮样式 */
+            .prompt-optimizer-button {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                margin-top: 8px;
+                background-color: #4285f4;
+            }
+
+            .prompt-optimizer-button:hover {
+                background-color: #3367d6;
+            }
+        </style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    </head>
+
+    <body>
+        <h1>Better Prompt</h1>
+
+        <!-- API 密钥设置部分 (置于最前面) -->
+        <div class="section">
+            <div class="section-title">
+                <span class="material-icons section-icon">key</span>API 密钥设置
+            </div>
+            <label for="apiKey">Gemini API 密钥:</label>
+            <input type="password" id="apiKey" placeholder="粘贴您的 API 密钥">
+            <div id="show-key-container">
+                <label id="show-key-label">
+                    <input type="checkbox" id="showKey"> 显示密钥
+                </label>
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" class="info-link"
+                    style="margin-left: auto;">
+                    获取 API 密钥
+                </a>
+            </div>
+        </div>
+
+        <!-- System Prompt 选择部分 -->
+        <div class="section">
+            <div class="section-title">
+                <span class="material-icons section-icon">settings</span>Prompt 设置
+            </div>
+            <label for="promptSelector">选择提示模板类型:</label>
+            <select id="promptSelector">
+                <option value="default">默认模板</option>
+                <option value="concise">简洁模板</option>
+                <option value="detailed">扩展模板</option>
+                <option value="custom">自定义模板</option>
+            </select>
+
+            <div id="customPromptSection" style="display: none;">
+                <label for="customPrompt">自定义 System Prompt:</label>
+                <textarea id="customPrompt" placeholder="在此输入您自定义的系统提示词..."></textarea>
+            </div>
+
+            <div id="currentPromptDisplay">
+                <label>当前生效的 Prompt:</label>
+                <div id="currentPrompt">正在加载...</div>
+            </div>
+        </div>
+
+        <!-- 模型选择部分（新增） -->
+        <div class="section">
+            <div class="section-title">
+                <span class="material-icons section-icon">smart_toy</span>模型设置
+            </div>
+            <label for="modelSelector">选择 Gemini 模型:</label>
+            <select id="modelSelector">
+                <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite (默认，速度快)</option>
+                <option value="gemini-2.0-flash">Gemini 2.0 Flash (质量更好)</option>
+            </select>
+            <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                <span class="material-icons" style="font-size: 14px; vertical-align: middle;">info</span>
+                Flash Lite 模型速度更快，Flash 模型质量更好但可能更慢
+            </div>
+        </div>
+
+        <!-- Prompt 优化器页面入口 -->
+        <div class="section">
+            <div class="section-title">
+                <span class="material-icons section-icon">psychology</span>Prompt 优化器
+            </div>
+            <button id="openPromptOptimizerBtn" class="prompt-optimizer-button">
+                <span class="material-icons">auto_fix_high</span>打开 Prompt 优化页面
+            </button>
+        </div>
+
+        <!-- 快捷键信息部分 -->
+        <div class="section">
+            <div class="section-title">
+                <span class="material-icons section-icon">keyboard</span>使用方法
+            </div>
+            <div class="shortcut-info">
+                <span class="material-icons shortcut-icon">info</span>
+                连续按下 <span class="shortcut-key">空格</span> <span class="shortcut-key">空格</span> <span
+                    class="shortcut-key">空格</span> (三次空格) 来优化选中文本
+            </div>
+        </div>
+
+        <div class="footer">Better Prompt - 让您的提示词更高效</div>
+
+        <script src="popup.js"></script>
+    </body>
+
+</html>
