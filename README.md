@@ -4,7 +4,7 @@
 
 **简述:** BetterPrompt 是一款 Chrome 插件，利用 Google Gemini API 帮助用户优化、改写和增强 Prompt，支持通过便捷的快捷键在网页内联优化，或使用专门的优化器页面进行更精细的调整。
 
-**详细描述:** 无论您是在与 ChatGPT、Claude 还是其他 AI 模型交互，BetterPrompt 都能提升您的 Prompt 工程效率。遇到不够理想的 Prompt 时，只需选中它并按下三次空格，即可调用 Gemini API 进行智能优化。此外，插件还提供了一个独立的"Prompt 优化器"页面，您可以输入或粘贴 Prompt，选择不同的优化策略（如简洁化、详细化）和 Gemini 模型（Flash Lite 或 Flash），生成更高质量的提示词。BetterPrompt 旨在简化 Prompt 优化流程，激发更多创意可能。
+**详细描述:** 无论您是在与 ChatGPT、Claude 还是其他 AI 模型交互，BetterPrompt 都能提升您的 Prompt 工程效率。遇到不够理想的 Prompt 时，只需在输入完毕后，连续按下三次空格，即可调用 Gemini API 进行智能优化。此外，插件还提供了一个独立的"Prompt 优化器"页面，您可以输入或粘贴 Prompt，选择不同的优化策略（如简洁化、详细化）和 Gemini 模型（Flash Lite 或 Flash），生成更高质量的提示词。BetterPrompt 旨在简化 Prompt 优化流程，激发更多创意可能。
 
 **目标用户:**
 *   经常使用 ChatGPT、Claude、Gemini 等大型语言模型的用户。
@@ -42,7 +42,7 @@
 BetterPrompt 需要以下权限才能正常工作：
 
 *   `storage`: 用于在本地安全地存储您的 Gemini API 密钥和插件设置（如选择的模型、提示类型）。
-*   `scripting` 或 `activeTab`: 用于在您触发快捷键时，读取您在当前页面选中的文本，并将优化后的文本写回页面。
+*   `scripting` 或 `activeTab`: 用于在您触发快捷键时，读取您在当前页面输入的文本，并将优化后的文本写回页面。
 
 *请注意：我们承诺仅申请必要的权限，并保护您的数据安全。您的 API 密钥仅存储在本地。*
 
@@ -54,7 +54,7 @@ BetterPrompt 需要以下权限才能正常工作：
 
 *   在任何网页上的文本框、输入框或可编辑区域 (如 ChatGPT 输入框、Google Docs 等) 中，输入您想要优化的文本。
 *   在当前文本输入框的位置，快速**连续按下三次空格键** (`空格` `空格` `空格`)。
-*   插件将自动调用 Gemini API 对选中文本进行优化，并在完成后替换原文。优化过程中，输入框可能会短暂变暗或禁用。
+*   插件将自动调用 Gemini API 对当前输入文本进行优化，并在完成后替换原文。优化过程中，输入框可能会短暂变暗或禁用。
 
 **2. 插件弹出窗口 (设置):**
 
