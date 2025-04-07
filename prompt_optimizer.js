@@ -1,6 +1,13 @@
 // prompt_optimizer.js
 console.log("[BetterPrompt Optimizer] 脚本加载完成");
 
+// 预设的系统提示词 - 从background.js复制到这里方便前端使用 
+const SYSTEM_PROMPTS = {
+    default: "请将以下用户输入改写为一个优化后的 Prompt，使其更清晰、具体，并包含足够的上下文信息，以便 AI 模型能够更好地理解和执行任务。请专注于提高 Prompt 的质量和效果，直接返回优化后的 Prompt 文本，不要包含任何解释性文字或前缀。",
+    concise: "请将以下用户输入浓缩为一个极其简洁但清晰的 AI Prompt。保留核心意图和关键信息，去除冗余。目标是最大限度地缩短长度，同时确保 AI 能够理解。直接返回优化后的 Prompt 文本，不要包含任何解释。",
+    detailed: "请将以下用户输入扩展并重构成一个高质量、详细的 AI Prompt。仔细分析用户意图，补充必要的背景信息、上下文、示例（如果适用）和约束条件。明确任务目标和期望的输出格式。确保 Prompt 结构清晰、逻辑严谨、信息全面。直接返回优化后的 Prompt 文本，不要包含任何解释性文字或前缀。"
+};
+
 // 防抖函数
 function debounce(func, wait) {
     let timeout;
@@ -26,14 +33,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingIndicator = document.getElementById('loadingIndicator');
     const promptSelector = document.getElementById('promptSelector');
     const modelSelector = document.getElementById('modelSelector');
+    const templateContent = document.getElementById('templateContent'); // 新增：模板内容展示区域
 
     // 加载保存的设置
     loadSavedSettings();
+
+    // 如果没有保存的设置，默认显示default模板内容
+    if (!templateContent.textContent || templateContent.textContent === "选择上方的模板类型查看具体内容..." || templateContent.textContent === "未找到模板内容") {
+        updateTemplateDisplay('default');
+    }
 
     // 事件监听
     optimizeButton.addEventListener('click', optimizePrompt);
     copyButton.addEventListener('click', copyOptimizedText);
     clearButton.addEventListener('click', clearAll);
+    promptSelector.addEventListener('change', handlePromptChange); // 新增：监听模板切换
 
     // 监听Enter键
     originalPromptTextarea.addEventListener('keydown', (e) => {
@@ -49,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 当提示词类型或模型改变时保存设置
-    promptSelector.addEventListener('change', saveSettings);
     modelSelector.addEventListener('change', saveSettings);
 
     /**
@@ -57,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function loadSavedSettings() {
         console.log("[BetterPrompt Optimizer] 正在加载保存的设置");
-        chrome.storage.local.get(['selectedPromptType', 'selectedModel'], (result) => {
+        chrome.storage.local.get(['selectedPromptType', 'selectedModel', 'customPrompt'], (result) => {
             // 设置选定的提示类型
             if (result.selectedPromptType) {
                 promptSelector.value = result.selectedPromptType;
@@ -69,10 +82,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 modelSelector.value = result.selectedModel;
                 console.log(`[BetterPrompt Optimizer] 已加载模型: ${result.selectedModel}`);
             }
+
+            // 更新模板内容展示
+            updateTemplateDisplay(result.selectedPromptType, result.customPrompt);
         });
 
         // 默认禁用优化按钮
         optimizeButton.disabled = true;
+    }
+
+    /**
+     * 处理提示模板的改变
+     */
+    function handlePromptChange() {
+        const selectedValue = promptSelector.value;
+        console.log("[BetterPrompt Optimizer] 提示模板更改为:", selectedValue);
+
+        // 从存储中获取自定义提示词
+        chrome.storage.local.get(['customPrompt'], (result) => {
+            updateTemplateDisplay(selectedValue, result.customPrompt);
+            saveSettings(); // 保存用户的选择
+        });
+    }
+
+    /**
+     * 更新模板内容展示
+     */
+    function updateTemplateDisplay(promptType, customPrompt) {
+        console.log(`[BetterPrompt Optimizer] 更新模板内容展示: 类型=${promptType}`);
+
+        if (promptType === 'custom' && customPrompt) {
+            templateContent.textContent = customPrompt;
+        } else if (SYSTEM_PROMPTS[promptType]) {
+            templateContent.textContent = SYSTEM_PROMPTS[promptType];
+        } else {
+            templateContent.textContent = '未找到模板内容';
+        }
     }
 
     /**

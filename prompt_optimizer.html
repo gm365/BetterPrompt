@@ -23,7 +23,7 @@
             h1 {
                 font-size: 28px;
                 margin: 0 0 16px 0;
-                color: #1a73e8;
+                color: #328E6E;
                 font-weight: 600;
             }
 
@@ -58,7 +58,7 @@
                 font-size: 18px;
                 font-weight: 600;
                 margin-bottom: 15px;
-                color: #1a73e8;
+                color: #328E6E;
                 display: flex;
                 align-items: center;
             }
@@ -82,12 +82,12 @@
 
             textarea:focus {
                 outline: none;
-                border-color: #1a73e8;
-                box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+                border-color: #328E6E;
+                box-shadow: 0 0 0 2px rgba(50, 142, 110, 0.2);
             }
 
             button {
-                background-color: #1a73e8;
+                background-color: #328E6E;
                 color: white;
                 border: none;
                 border-radius: 6px;
@@ -103,7 +103,7 @@
             }
 
             button:hover {
-                background-color: #1765cc;
+                background-color: #2c7a5e;
             }
 
             button:disabled {
@@ -117,11 +117,11 @@
             }
 
             .copy-button {
-                background-color: #34a853;
+                background-color: #67AE6E;
             }
 
             .copy-button:hover {
-                background-color: #2d914a;
+                background-color: #5a9a60;
             }
 
             .model-info {
@@ -131,6 +131,27 @@
                 margin-bottom: 15px;
                 color: #666;
                 font-size: 14px;
+            }
+
+            .template-title {
+                font-size: 14px;
+                font-weight: 500;
+                margin: 5px 0;
+                color: #666;
+            }
+
+            .template-content {
+                background-color: #E1EEBC;
+                border: 1px solid #90C67C;
+                border-radius: 6px;
+                padding: 12px;
+                font-size: 14px;
+                line-height: 1.6;
+                max-height: 100px;
+                overflow-y: auto;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                margin-bottom: 15px;
             }
 
             .model-selector {
@@ -159,7 +180,7 @@
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                color: #1a73e8;
+                color: #328E6E;
                 font-weight: 500;
             }
 
@@ -170,9 +191,9 @@
             .spinner {
                 width: 20px;
                 height: 20px;
-                border: 3px solid rgba(26, 115, 232, 0.3);
+                border: 3px solid rgba(50, 142, 110, 0.3);
                 border-radius: 50%;
-                border-top-color: #1a73e8;
+                border-top-color: #328E6E;
                 animation: spin 1s ease-in-out infinite;
             }
 
@@ -206,7 +227,7 @@
             }
 
             .toast-notification.success {
-                background-color: #4CAF50;
+                background-color: #67AE6E;
             }
 
             .toast-notification.error {
@@ -214,7 +235,12 @@
             }
 
             .toast-notification.info {
-                background-color: #2196F3;
+                background-color: #90C67C;
+            }
+
+            .toast-notification.warning {
+                background-color: #E1EEBC;
+                color: #328E6E;
             }
 
             .footer {
@@ -222,6 +248,15 @@
                 margin-top: 30px;
                 color: #666;
                 font-size: 14px;
+            }
+
+            .template-container {
+                max-width: 1200px;
+                margin: 20px auto;
+                background-color: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
             }
 
             @media (max-width: 768px) {
@@ -274,6 +309,13 @@
                         </select>
                     </div>
                 </div>
+
+                <!-- 添加模板内容标题 -->
+                <div class="template-title">当前模板内容：</div>
+                <div class="template-content" id="templateContent">
+                    选择上方的模板类型查看具体内容...
+                </div>
+
                 <textarea id="optimizedPrompt" placeholder="优化后的提示词将显示在这里..." readonly></textarea>
                 <div class="button-container">
                     <button id="copyButton" class="copy-button" disabled>
