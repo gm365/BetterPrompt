@@ -322,33 +322,42 @@
             <div class="section-title">
                 <span class="material-icons section-icon">smart_toy</span>模型设置
             </div>
-            <label for="modelSelector">选择 Gemini 模型:</label>
-            <select id="modelSelector">
-                <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite (默认，速度快)</option>
-                <option value="gemini-2.0-flash">Gemini 2.0 Flash (质量更好)</option>
-                <option value="gemini-2.5-pro-exp-03-25">Gemini 2.5 Pro (质量最高，但速度极慢)</option>
-            </select>
 
-            <!-- 温度设置 -->
-            <label for="temperatureSlider" style="margin-top: 12px;">生成温度 (Temperature):</label>
-            <div class="two-column" style="align-items: center;">
-                <div style="flex: 3;">
-                    <input type="range" id="temperatureSlider" min="0" max="1" step="0.1" value="0.2">
+            <!-- 模型选择和温度调节并列显示 -->
+            <div style="display: flex; gap: 15px; margin-bottom: 10px;">
+                <!-- 左侧：模型选择 -->
+                <div style="flex: 1;">
+                    <label for="modelSelector">选择 Gemini 模型:</label>
+                    <select id="modelSelector" style="margin-top: 5px;">
+                        <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite (默认)</option>
+                        <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                        <option value="gemini-2.5-pro-exp-03-25">Gemini 2.5 Pro</option>
+                    </select>
                 </div>
-                <div style="flex: 1; text-align: center;">
-                    <div id="temperatureValue"
-                        style="font-size: 16px; font-weight: 500; color: #328E6E; background: #f1f3f4; padding: 6px 0; border-radius: 4px;">
-                        0.2</div>
+
+                <!-- 右侧：温度调节 -->
+                <div style="flex: 1;">
+                    <label for="temperatureSlider">温度:</label>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 5px;">
+                        <input type="range" id="temperatureSlider" min="0" max="1" step="0.1" value="0.2"
+                            style="flex: 1;">
+                        <div id="temperatureValue"
+                            style="min-width: 30px; text-align: center; font-size: 16px; font-weight: 500; color: #328E6E; background: #f1f3f4; padding: 3px 5px; border-radius: 4px;">
+                            0.2</div>
+                    </div>
                 </div>
             </div>
-            <div style="font-size: 12px; color: #666; margin-top: 4px;">
-                <span class="material-icons" style="font-size: 14px; vertical-align: middle;">info</span>
-                温度值越低 (接近0)，生成内容越稳定可预测；温度值越高 (接近1)，生成内容越多样创新
-            </div>
 
-            <div style="font-size: 12px; color: #666; margin-top: 4px;">
-                <span class="material-icons" style="font-size: 14px; vertical-align: middle;">info</span>
-                Flash Lite 模型速度更快，Flash 模型质量更好但可能更慢，Pro 模型质量最高但速度最慢，谨慎使用
+            <!-- 模型和温度说明 -->
+            <div style="font-size: 12px; color: #666; display: flex; gap: 15px;">
+                <div style="flex: 1;">
+                    <span class="material-icons" style="font-size: 14px; vertical-align: middle;">info</span>
+                    Flash Lite 速度快，Flash 质量好，Pro 质量最高但最慢
+                </div>
+                <div style="flex: 1;">
+                    <span class="material-icons" style="font-size: 14px; vertical-align: middle;">info</span>
+                    低温度 = 稳定内容，高温度 = 创新内容
+                </div>
             </div>
         </div>
 

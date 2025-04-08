@@ -48,8 +48,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             // 获取选择的模型
             const selectedModel = result.selectedModel || DEFAULT_MODEL;
 
-            // 获取用户设置的温度值，如果未设置则使用默认值
-            const temperature = result.temperature !== undefined ? result.temperature : DEFAULT_TEMPERATURE;
+            // 获取温度值：优先使用请求中的temperature参数，如果未提供，再从storage中获取
+            let temperature;
+            if (request.temperature !== undefined) {
+                temperature = request.temperature;
+                console.log("[BetterPrompt BG] 使用请求中提供的温度值:", temperature);
+            } else {
+                temperature = result.temperature !== undefined ? result.temperature : DEFAULT_TEMPERATURE;
+                console.log("[BetterPrompt BG] 使用存储中的温度值:", temperature);
+            }
 
             // 添加控制台输出：显示当前请求使用的 prompt 类型
             console.log(`[BetterPrompt BG] 当前请求使用的提示词类型: ${promptType === 'default' ? '默认' :

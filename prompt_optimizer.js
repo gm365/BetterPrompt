@@ -9,6 +9,9 @@ const SYSTEM_PROMPTS = {
     detailed: "请对以下用户输入进行深入分析，并扩展生成一个结构完整、详细且高质量的 AI Prompt。要求：明确描述任务目标、背景信息、限制条件及示例（如适用），确保 AI 可以全面理解并准确响应。直接返回优化后的 Prompt，且不得包含任何解释性文字或多余说明。"
 };
 
+// 默认温度值
+let DEFAULT_TEMPERATURE = 0.2; // 先设置一个默认值，后续会从 background.js 获取
+
 // 防抖函数
 function debounce(func, wait) {
     let timeout;
@@ -35,6 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const promptSelector = document.getElementById('promptSelector');
     const modelSelector = document.getElementById('modelSelector');
     const templateContent = document.getElementById('templateContent'); // 新增：模板内容展示区域
+    const temperatureSlider = document.getElementById('temperatureSlider');
+    const temperatureValue = document.getElementById('temperatureValue');
 
     // 加载保存的设置
     loadSavedSettings();
@@ -71,12 +76,34 @@ document.addEventListener('DOMContentLoaded', () => {
     // 当提示词类型或模型改变时保存设置
     modelSelector.addEventListener('change', saveSettings);
 
+    // 处理温度滑块更改
+    temperatureSlider.addEventListener('input', () => {
+        temperatureValue.textContent = temperatureSlider.value;
+        saveSettings(); // 立即保存温度设置
+    });
+
+    // 从 background.js 获取默认温度值
+    chrome.runtime.sendMessage({ type: "GET_DEFAULT_TEMPERATURE" }, (response) => {
+        if (chrome.runtime.lastError) {
+            console.warn("[BetterPrompt Optimizer] 获取默认温度值时出错:", chrome.runtime.lastError);
+            // 继续使用默认值
+        } else if (response && response.defaultTemperature !== undefined) {
+            DEFAULT_TEMPERATURE = response.defaultTemperature;
+            console.log("[BetterPrompt Optimizer] 从 background.js 获取默认温度值:", DEFAULT_TEMPERATURE);
+            // 如果此时已经加载完成，但还没有设置温度值，则设置默认温度值
+            if (temperatureSlider && (!temperatureSlider.value || temperatureSlider.value === "0")) {
+                temperatureSlider.value = DEFAULT_TEMPERATURE;
+                temperatureValue.textContent = DEFAULT_TEMPERATURE;
+            }
+        }
+    });
+
     /**
      * 加载保存的设置
      */
     function loadSavedSettings() {
         console.log("[BetterPrompt Optimizer] 正在加载保存的设置");
-        chrome.storage.local.get(['selectedPromptType', 'selectedModel', 'customPrompt'], (result) => {
+        chrome.storage.local.get(['selectedPromptType', 'selectedModel', 'customPrompt', 'temperature'], (result) => {
             // 设置选定的提示类型
             if (result.selectedPromptType) {
                 promptSelector.value = result.selectedPromptType;
@@ -88,6 +115,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 modelSelector.value = result.selectedModel;
                 console.log(`[BetterPrompt Optimizer] 已加载模型: ${result.selectedModel}`);
             }
+
+            // 设置温度值
+            const temperature = result.temperature !== undefined ? result.temperature : DEFAULT_TEMPERATURE;
+            temperatureSlider.value = temperature;
+            temperatureValue.textContent = temperature;
+            console.log("[BetterPrompt Optimizer] 温度值已加载:", temperature);
 
             // 更新模板内容展示
             updateTemplateDisplay(result.selectedPromptType, result.customPrompt);
@@ -132,10 +165,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveSettings() {
         console.log("[BetterPrompt Optimizer] 正在保存设置");
 
+        const temperature = parseFloat(temperatureSlider.value);
+
         const settings = {
             selectedPromptType: promptSelector.value,
-            selectedModel: modelSelector.value
+            selectedModel: modelSelector.value,
+            temperature: isNaN(temperature) ? DEFAULT_TEMPERATURE : temperature
         };
+
+        console.log(`[BetterPrompt Optimizer] 正在保存 - 温度值: ${settings.temperature}`);
 
         chrome.storage.local.set(settings, () => {
             if (chrome.runtime.lastError) {
@@ -173,12 +211,17 @@ document.addEventListener('DOMContentLoaded', () => {
             // 获取当前选择的提示词类型和模型
             const promptType = promptSelector.value;
             const modelName = modelSelector.value;
+            const temperature = parseFloat(temperatureSlider.value);
 
-            console.log(`[BetterPrompt Optimizer] 开始优化 - 使用模板: ${promptType}, 模型: ${modelName}`);
+            console.log(`[BetterPrompt Optimizer] 开始优化 - 使用模板: ${promptType}, 模型: ${modelName}, 温度: ${temperature}`);
 
             // 发送消息到 background.js 进行处理
             chrome.runtime.sendMessage(
-                { type: "OPTIMIZE_TEXT", text: originalText },
+                {
+                    type: "OPTIMIZE_TEXT",
+                    text: originalText,
+                    temperature: temperature // 新增：传递温度值
+                },
                 (response) => {
                     // 隐藏加载状态
                     loadingIndicator.classList.remove('show');
