@@ -52,23 +52,31 @@
             }
 
             .container {
-                display: flex;
-                gap: 20px;
+                display: grid;
+                grid-template-columns: minmax(350px, 30%) 1fr;
+                gap: 30px;
                 max-width: 1200px;
                 margin: 0 auto;
-                height: calc(100vh - 200px);
-                min-height: 500px;
+                height: auto;
+                min-height: 600px;
             }
 
             .panel {
-                flex: 1;
                 background-color: var(--bg-panel);
-                padding: 20px;
-                border-radius: 10px;
-                box-shadow: 0 2px 6px var(--shadow-color);
+                padding: 24px;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px var(--shadow-color);
                 display: flex;
                 flex-direction: column;
                 border: 1px solid var(--border-color);
+            }
+
+            .left-panel {
+                min-width: 320px;
+            }
+
+            .right-panel {
+                min-width: 400px;
             }
 
             .panel-title {
@@ -87,15 +95,17 @@
 
             textarea {
                 flex: 1;
-                padding: 15px;
+                padding: 18px;
                 border: 1px solid var(--border-color);
-                border-radius: 6px;
+                border-radius: 8px;
                 font-size: 16px;
-                line-height: 1.5;
+                line-height: 1.6;
                 resize: none;
                 font-family: inherit;
                 margin-bottom: 15px;
                 background-color: white;
+                box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+                transition: all 0.25s ease;
             }
 
             textarea:focus {
@@ -108,12 +118,13 @@
                 background-color: var(--primary-color);
                 color: white;
                 border: none;
-                border-radius: 6px;
-                padding: 10px 15px;
+                border-radius: 8px;
+                padding: 12px 20px;
                 font-size: 16px;
                 cursor: pointer;
-                font-weight: 500;
-                transition: background-color 0.2s;
+                font-weight: 600;
+                letter-spacing: 0.5px;
+                transition: all 0.2s ease;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -131,7 +142,7 @@
 
             .button-container {
                 display: flex;
-                gap: 10px;
+                gap: 15px;
             }
 
             .copy-button {
@@ -142,62 +153,90 @@
                 background-color: #5a9a60;
             }
 
+            .model-selector-container {
+                margin-bottom: 15px;
+            }
+
             .model-info {
                 display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 15px;
+                flex-direction: column;
+                gap: 8px;
+                margin-bottom: 10px;
                 color: var(--text-medium);
                 font-size: 14px;
             }
 
+            .settings-section {
+                background-color: white;
+                border-radius: 8px;
+                padding: 16px;
+                margin-bottom: 20px;
+                border: 1px solid var(--border-color);
+            }
+
+            .input-section {
+                margin-top: 20px;
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+            }
+
             .template-title {
-                font-size: 14px;
+                font-size: 13px;
                 font-weight: 500;
-                margin: 5px 0;
+                margin: 5px 0 3px 0;
                 color: var(--text-medium);
             }
 
             .template-content {
-                background-color: rgba(225, 238, 188, 0.6);
+                background-color: #f5f9ef;
                 border: 1px solid var(--secondary-light);
-                border-radius: 6px;
-                padding: 12px;
+                border-radius: 8px;
+                padding: 14px;
                 font-size: 14px;
                 line-height: 1.6;
                 max-height: 100px;
                 overflow-y: auto;
                 white-space: pre-wrap;
                 word-wrap: break-word;
-                margin-bottom: 15px;
+                margin-bottom: 12px;
                 color: var(--text-dark);
             }
 
             .model-selector,
             .prompt-selector {
-                padding: 6px 10px;
-                border-radius: 4px;
+                padding: 8px 12px;
+                border-radius: 6px;
                 border: 1px solid var(--border-color);
                 font-size: 14px;
                 background-color: white;
                 color: var(--text-dark);
+                width: 100%;
+            }
+
+            .optimize-button {
+                width: 100%;
+                margin-top: 10px;
+                height: 48px;
+                font-size: 16px;
+                background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             }
 
             .loading-indicator {
                 display: none;
                 align-items: center;
                 justify-content: center;
-                gap: 10px;
-                padding: 10px;
+                gap: 12px;
+                padding: 16px 24px;
                 background-color: rgba(249, 252, 249, 0.95);
-                border-radius: 6px;
+                border-radius: 12px;
                 position: absolute;
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
                 color: var(--primary-color);
                 font-weight: 500;
-                box-shadow: 0 2px 8px var(--shadow-color);
+                box-shadow: 0 4px 12px var(--shadow-color);
                 border: 1px solid var(--border-color);
             }
 
@@ -278,8 +317,25 @@
 
             @media (max-width: 768px) {
                 .container {
-                    flex-direction: column;
-                    height: auto;
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                }
+
+                .panel {
+                    padding: 18px;
+                }
+
+                .left-panel,
+                .right-panel {
+                    min-width: unset;
+                }
+
+                .template-content {
+                    max-height: 80px;
+                }
+
+                .optimize-button {
+                    height: 44px;
                 }
             }
         </style>
@@ -293,46 +349,53 @@
         </header>
 
         <div class="container">
-            <div class="panel">
-                <div class="panel-title">
-                    <span class="material-icons panel-icon">edit</span>原始提示词
+            <div class="panel left-panel">
+                <div class="settings-section">
+                    <div class="panel-title" style="margin-bottom: 10px; font-size: 16px;">
+                        <span class="material-icons panel-icon">settings</span>优化设置
+                    </div>
+                    <div class="model-info">
+                        <div>
+                            <span>优化模板:</span>
+                            <select id="promptSelector" class="prompt-selector">
+                                <option value="default">默认模板</option>
+                                <option value="concise">简洁模板</option>
+                                <option value="detailed">扩展模板</option>
+                                <option value="custom">自定义模板</option>
+                            </select>
+                        </div>
+
+                        <div class="template-title">当前模板内容：</div>
+                        <div class="template-content" id="templateContent">
+                            选择上方的模板类型查看具体内容...
+                        </div>
+
+                        <div>
+                            <span>使用模型:</span>
+                            <select id="modelSelector" class="model-selector">
+                                <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
+                                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                                <option value="gemini-2.5-pro-exp-03-25">Gemini 2.5 Pro</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <textarea id="originalPrompt" placeholder="在此输入您的原始提示词..."></textarea>
-                <button id="optimizeButton" class="optimize-button">
-                    <span class="material-icons">auto_fix_high</span>优化提示词
-                </button>
+
+                <div class="input-section">
+                    <div class="panel-title" style="margin-bottom: 10px; font-size: 16px;">
+                        <span class="material-icons panel-icon">edit</span>原始提示词
+                    </div>
+                    <textarea id="originalPrompt" placeholder="在此输入您的原始提示词..."></textarea>
+                    <button id="optimizeButton" class="optimize-button">
+                        <span class="material-icons">auto_fix_high</span>优化提示词
+                    </button>
+                </div>
             </div>
 
-            <div class="panel">
+            <div class="panel right-panel">
                 <div class="panel-title">
                     <span class="material-icons panel-icon">psychology</span>优化结果
                 </div>
-                <div class="model-info">
-                    <div>
-                        <span>优化模板:</span>
-                        <select id="promptSelector" class="prompt-selector">
-                            <option value="default">默认模板</option>
-                            <option value="concise">简洁模板</option>
-                            <option value="detailed">扩展模板</option>
-                            <option value="custom">自定义模板</option>
-                        </select>
-                    </div>
-                    <div>
-                        <span>使用模型:</span>
-                        <select id="modelSelector" class="model-selector">
-                            <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
-                            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-                            <option value="gemini-2.5-pro-exp-03-25">Gemini 2.5 Pro</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- 添加模板内容标题 -->
-                <div class="template-title">当前模板内容：</div>
-                <div class="template-content" id="templateContent">
-                    选择上方的模板类型查看具体内容...
-                </div>
-
                 <textarea id="optimizedPrompt" placeholder="优化后的提示词将显示在这里..." readonly></textarea>
                 <div class="button-container">
                     <button id="copyButton" class="copy-button" disabled>
