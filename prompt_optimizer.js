@@ -12,6 +12,75 @@ const SYSTEM_PROMPTS = {
 // 默认温度值
 let DEFAULT_TEMPERATURE = 0.2; // 先设置一个默认值，后续会从 background.js 获取
 
+/**
+ * 根据温度值获取对应的颜色
+ * @param {number} temperature - 温度值（0-1）
+ * @returns {string} - 颜色的 CSS 值
+ */
+function getTemperatureColor(temperature) {
+    // 确保温度值在 0-1 范围内
+    temperature = Math.min(1, Math.max(0, temperature));
+
+    // 定义冷色到热色的渐变色带
+    const colors = [
+        { temp: 0.0, color: '#3b82f6' },  // 蓝色 (冷)
+        { temp: 0.2, color: '#60a5fa' },  // 淡蓝色
+        { temp: 0.4, color: '#a3e635' },  // 绿色
+        { temp: 0.6, color: '#facc15' },  // 黄色
+        { temp: 0.8, color: '#f97316' },  // 橙色
+        { temp: 1.0, color: '#ef4444' }   // 红色 (热)
+    ];
+
+    // 找到温度值所处的范围
+    let startColor, endColor;
+    let startTemp, endTemp;
+
+    for (let i = 0; i < colors.length - 1; i++) {
+        if (temperature >= colors[i].temp && temperature <= colors[i + 1].temp) {
+            startColor = colors[i].color;
+            endColor = colors[i + 1].color;
+            startTemp = colors[i].temp;
+            endTemp = colors[i + 1].temp;
+            break;
+        }
+    }
+
+    // 如果是边界值，直接返回对应颜色
+    if (temperature === 0) return colors[0].color;
+    if (temperature === 1) return colors[colors.length - 1].color;
+
+    // 计算插值比例
+    const ratio = (temperature - startTemp) / (endTemp - startTemp);
+
+    // 将颜色从十六进制转换为RGB
+    const startRGB = hexToRgb(startColor);
+    const endRGB = hexToRgb(endColor);
+
+    // 线性插值两个颜色
+    const r = Math.round(startRGB.r + ratio * (endRGB.r - startRGB.r));
+    const g = Math.round(startRGB.g + ratio * (endRGB.g - startRGB.g));
+    const b = Math.round(startRGB.b + ratio * (endRGB.b - startRGB.b));
+
+    return `rgb(${r}, ${g}, ${b})`;
+}
+
+/**
+ * 将十六进制颜色转换为RGB
+ * @param {string} hex - 十六进制颜色值
+ * @returns {Object} - RGB颜色对象
+ */
+function hexToRgb(hex) {
+    // 去掉 # 号
+    hex = hex.replace('#', '');
+
+    // 将十六进制转为 RGB
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+
+    return { r, g, b };
+}
+
 // 防抖函数
 function debounce(func, wait) {
     let timeout;
@@ -40,6 +109,70 @@ document.addEventListener('DOMContentLoaded', () => {
     const templateContent = document.getElementById('templateContent'); // 新增：模板内容展示区域
     const temperatureSlider = document.getElementById('temperatureSlider');
     const temperatureValue = document.getElementById('temperatureValue');
+
+    // 设置滑块的彩虹色渐变 - 调整为更柔和的色彩
+    const rainbowGradient = `linear-gradient(to right, 
+        rgba(92, 139, 246, 0.7) 0%, 
+        rgba(131, 177, 250, 0.7) 20%, 
+        rgba(176, 231, 102, 0.7) 40%, 
+        rgba(250, 222, 95, 0.7) 60%, 
+        rgba(249, 148, 82, 0.7) 80%, 
+        rgba(239, 112, 112, 0.7) 100%)`;
+
+    // 添加CSS样式到文档头部
+    const styleEl = document.createElement('style');
+    styleEl.textContent = `
+        #temperatureSlider::-webkit-slider-runnable-track {
+            background: ${rainbowGradient};
+            height: 6px; /* 减小高度 */
+            border-radius: 3px;
+        }
+        #temperatureSlider::-moz-range-track {
+            background: ${rainbowGradient};
+            height: 6px; /* 减小高度 */
+            border-radius: 3px;
+        }
+        #temperatureSlider::-ms-track {
+            background: ${rainbowGradient};
+            height: 6px; /* 减小高度 */
+            border-radius: 3px;
+        }
+        #temperatureSlider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px; /* 减小高度 */
+            border-radius: 3px;
+            background: transparent; /* 移除背景色，使用透明背景 */
+        }
+        #temperatureSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #328E6E;
+            cursor: pointer;
+            margin-top: -5px;
+        }
+        #temperatureSlider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #328E6E;
+            cursor: pointer;
+        }
+        #temperatureSlider::-ms-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #328E6E;
+            cursor: pointer;
+        }
+    `;
+    document.head.appendChild(styleEl);
 
     // 加载保存的设置
     loadSavedSettings();
@@ -76,9 +209,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // 当提示词类型或模型改变时保存设置
     modelSelector.addEventListener('change', saveSettings);
 
+    /**
+     * 更新温度颜色
+     * @param {number} tempValue - 温度值
+     */
+    function updateTemperatureColor(tempValue) {
+        // 取消使用彩虹色效果，改为固定颜色
+        temperatureValue.style.backgroundColor = '#f5f9ef'; // 恢复原始背景色
+        temperatureValue.style.color = 'var(--primary-color)'; // 恢复原始文字颜色
+    }
+
     // 处理温度滑块更改
     temperatureSlider.addEventListener('input', () => {
+        const tempValue = parseFloat(temperatureSlider.value);
         temperatureValue.textContent = temperatureSlider.value;
+        updateTemperatureColor(tempValue);
         saveSettings(); // 立即保存温度设置
     });
 
@@ -94,6 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (temperatureSlider && (!temperatureSlider.value || temperatureSlider.value === "0")) {
                 temperatureSlider.value = DEFAULT_TEMPERATURE;
                 temperatureValue.textContent = DEFAULT_TEMPERATURE;
+                updateTemperatureColor(DEFAULT_TEMPERATURE);
             }
         }
     });
@@ -120,6 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const temperature = result.temperature !== undefined ? result.temperature : DEFAULT_TEMPERATURE;
             temperatureSlider.value = temperature;
             temperatureValue.textContent = temperature;
+            updateTemperatureColor(temperature); // 更新温度颜色
             console.log("[BetterPrompt Optimizer] 温度值已加载:", temperature);
 
             // 更新模板内容展示
