@@ -3,6 +3,8 @@ console.log("[BetterPrompt Popup] 脚本加载完成");
 
 // 默认模型
 const DEFAULT_MODEL = "gemini-2.0-flash-lite";
+// 获取 background.js 中的默认温度值
+let DEFAULT_TEMPERATURE = 0.2; // 先设置一个默认值，后续会从 background.js 获取
 
 // 防抖函数
 function debounce(func, wait) {
@@ -29,7 +31,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentPromptDisplay = document.getElementById('currentPrompt');
     const modelSelector = document.getElementById('modelSelector');
     const openPromptOptimizerBtn = document.getElementById('openPromptOptimizerBtn');
+    const temperatureSlider = document.getElementById('temperatureSlider');
+    const temperatureValue = document.getElementById('temperatureValue');
     // const statusDiv = document.getElementById('status'); // Remove statusDiv reference
+
+    // 从 background.js 获取默认温度值 - 使用消息传递替代getBackgroundPage
+    chrome.runtime.sendMessage({ type: "GET_DEFAULT_TEMPERATURE" }, (response) => {
+        if (chrome.runtime.lastError) {
+            console.warn("[BetterPrompt Popup] 获取默认温度值时出错:", chrome.runtime.lastError);
+            // 继续使用默认值
+        } else if (response && response.defaultTemperature !== undefined) {
+            DEFAULT_TEMPERATURE = response.defaultTemperature;
+            console.log("[BetterPrompt Popup] 从 background.js 获取默认温度值:", DEFAULT_TEMPERATURE);
+            // 如果此时已经加载完成，但还没有设置温度值，则设置默认温度值
+            if (temperatureSlider && (!temperatureSlider.value || temperatureSlider.value === "0")) {
+                temperatureSlider.value = DEFAULT_TEMPERATURE;
+                temperatureValue.textContent = DEFAULT_TEMPERATURE;
+            }
+        }
+    });
 
     // 加载已保存的设置
     loadSavedSettings();
@@ -66,6 +86,12 @@ document.addEventListener('DOMContentLoaded', () => {
         saveSettings(); // 下拉框更改立即保存
     });
 
+    // 处理温度滑块更改
+    temperatureSlider.addEventListener('input', () => {
+        temperatureValue.textContent = temperatureSlider.value;
+        debouncedSaveSettings(); // 使用防抖保存
+    });
+
     // 处理打开Prompt优化器页面按钮点击
     openPromptOptimizerBtn.addEventListener('click', () => {
         console.log("[BetterPrompt Popup] 打开Prompt优化器页面");
@@ -77,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function loadSavedSettings() {
         console.log("[BetterPrompt Popup] 正在加载保存的设置");
-        chrome.storage.local.get(['geminiApiKey', 'selectedPromptType', 'customPrompt', 'selectedModel'], (result) => {
+        chrome.storage.local.get(['geminiApiKey', 'selectedPromptType', 'customPrompt', 'selectedModel', 'temperature'], (result) => {
             // 设置 API 密钥
             if (result.geminiApiKey) {
                 apiKeyInput.value = result.geminiApiKey;
@@ -111,6 +137,12 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("[BetterPrompt Popup] 模型已加载:", modelName);
             // 添加控制台输出：选择的模型名称
             console.log(`[BetterPrompt Popup] 选择的模型名称: ${modelName}`);
+
+            // 设置温度值
+            const temperature = result.temperature !== undefined ? result.temperature : DEFAULT_TEMPERATURE;
+            temperatureSlider.value = temperature;
+            temperatureValue.textContent = temperature;
+            console.log("[BetterPrompt Popup] 温度值已加载:", temperature);
 
             // 更新当前显示的提示词
             updateCurrentPromptDisplay();
@@ -184,6 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedPromptType = promptSelector.value;
         const customPrompt = customPromptTextarea.value.trim();
         const selectedModel = modelSelector.value;
+        const temperature = parseFloat(temperatureSlider.value);
 
         // 添加控制台输出：更新设置时的提示词类型和模型名称
         console.log(`[BetterPrompt Popup] 正在保存 - 提示词类型: ${selectedPromptType === 'default' ? '默认' :
@@ -191,6 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 selectedPromptType === 'detailed' ? '详细' :
                     selectedPromptType === 'custom' ? '自定义' : selectedPromptType}`);
         console.log(`[BetterPrompt Popup] 正在保存 - 模型名称: ${selectedModel}`);
+        console.log(`[BetterPrompt Popup] 正在保存 - 温度值: ${temperature}`);
 
         if (!apiKey) {
             console.warn("[BetterPrompt Popup] API 密钥为空，但仍会保存。");
@@ -205,7 +239,8 @@ document.addEventListener('DOMContentLoaded', () => {
             geminiApiKey: apiKey,
             selectedPromptType: selectedPromptType,
             customPrompt: customPrompt,
-            selectedModel: selectedModel
+            selectedModel: selectedModel,
+            temperature: isNaN(temperature) ? DEFAULT_TEMPERATURE : temperature
         };
 
         chrome.storage.local.set(settings, () => {

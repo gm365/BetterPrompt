@@ -24,7 +24,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         // 1. 从 storage 获取 API Key 和提示模板设置
         console.log("[BetterPrompt BG] Attempting to get settings from storage.");
-        chrome.storage.local.get(['geminiApiKey', 'selectedPromptType', 'customPrompt', 'selectedModel'], async (result) => {
+        chrome.storage.local.get(['geminiApiKey', 'selectedPromptType', 'customPrompt', 'selectedModel', 'temperature'], async (result) => {
             const apiKey = result.geminiApiKey;
 
             if (!apiKey) {
@@ -48,6 +48,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             // 获取选择的模型
             const selectedModel = result.selectedModel || DEFAULT_MODEL;
 
+            // 获取用户设置的温度值，如果未设置则使用默认值
+            const temperature = result.temperature !== undefined ? result.temperature : DEFAULT_TEMPERATURE;
+
             // 添加控制台输出：显示当前请求使用的 prompt 类型
             console.log(`[BetterPrompt BG] 当前请求使用的提示词类型: ${promptType === 'default' ? '默认' :
                 promptType === 'concise' ? '简洁明了' :
@@ -57,13 +60,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             // 添加控制台输出：显示当前请求使用的模型
             console.log(`[BetterPrompt BG] 当前请求使用的模型: ${selectedModel}`);
 
+            // 添加控制台输出：显示当前请求使用的温度值
+            console.log(`[BetterPrompt BG] 当前请求使用的温度值: ${temperature}`);
+
             console.log("[BetterPrompt BG] Using prompt type:", promptType);
             console.log("[BetterPrompt BG] Using model:", selectedModel);
 
             // 2. 调用 Gemini API (异步操作)
             try {
                 console.log("[BetterPrompt BG] Calling callGeminiApi function...");
-                const optimizedText = await callGeminiApi(apiKey, request.text, systemPrompt, selectedModel);
+                const optimizedText = await callGeminiApi(apiKey, request.text, systemPrompt, selectedModel, temperature);
                 console.log("[BetterPrompt BG] callGeminiApi returned successfully. Sending optimized text back.");
                 sendResponse({ optimizedText: optimizedText });
                 console.log("[BetterPrompt BG] Sent success response with optimized text.");
@@ -92,16 +98,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         return false; // 这是同步响应，不需要返回 true
     }
+    // 新增：处理获取默认温度值的请求
+    else if (request.type === "GET_DEFAULT_TEMPERATURE") {
+        console.log("[BetterPrompt BG] Handling GET_DEFAULT_TEMPERATURE request");
+        sendResponse({ defaultTemperature: DEFAULT_TEMPERATURE });
+        return false; // 这是同步响应，不需要返回 true
+    }
 
     console.warn("[BetterPrompt BG] Received unknown message type:", request.type);
     return false; // 对其他消息类型同步返回 false
 });
 
-async function callGeminiApi(apiKey, textToOptimize, systemPrompt, modelName = DEFAULT_MODEL) {
+async function callGeminiApi(apiKey, textToOptimize, systemPrompt, modelName = DEFAULT_MODEL, temperature = DEFAULT_TEMPERATURE) {
     // 使用指定的模型，根据参数选择模型
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`;
 
     console.log(`[BetterPrompt BG] Using model: ${modelName}`);
+    console.log(`[BetterPrompt BG] Using temperature: ${temperature}`);
     // console.log(`[BetterPrompt BG] System Prompt: ${systemPrompt}`); // Log system prompt if needed
 
     // 不再手动拼接，使用独立的 system_instruction 和 contents
@@ -122,7 +135,7 @@ async function callGeminiApi(apiKey, textToOptimize, systemPrompt, modelName = D
         }],
         // 添加 generationConfig 控制生成行为
         generationConfig: {
-            temperature: DEFAULT_TEMPERATURE, // 使用常量
+            temperature: temperature, // 使用传入的温度值
             maxOutputTokens: DEFAULT_MAX_OUTPUT_TOKENS // 使用常量
             // topP: 0.95, // 可以使用默认值
             // topK: 40,   // 可以使用默认值

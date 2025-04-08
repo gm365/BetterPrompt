@@ -328,6 +328,24 @@
                 <option value="gemini-2.0-flash">Gemini 2.0 Flash (质量更好)</option>
                 <option value="gemini-2.5-pro-exp-03-25">Gemini 2.5 Pro (质量最高，但速度极慢)</option>
             </select>
+
+            <!-- 温度设置 -->
+            <label for="temperatureSlider" style="margin-top: 12px;">生成温度 (Temperature):</label>
+            <div class="two-column" style="align-items: center;">
+                <div style="flex: 3;">
+                    <input type="range" id="temperatureSlider" min="0" max="1" step="0.1" value="0.2">
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div id="temperatureValue"
+                        style="font-size: 16px; font-weight: 500; color: #328E6E; background: #f1f3f4; padding: 6px 0; border-radius: 4px;">
+                        0.2</div>
+                </div>
+            </div>
+            <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                <span class="material-icons" style="font-size: 14px; vertical-align: middle;">info</span>
+                温度值越低 (接近0)，生成内容越稳定可预测；温度值越高 (接近1)，生成内容越多样创新
+            </div>
+
             <div style="font-size: 12px; color: #666; margin-top: 4px;">
                 <span class="material-icons" style="font-size: 14px; vertical-align: middle;">info</span>
                 Flash Lite 模型速度更快，Flash 模型质量更好但可能更慢，Pro 模型质量最高但速度最慢，谨慎使用
