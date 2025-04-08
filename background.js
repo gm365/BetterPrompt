@@ -2,15 +2,17 @@
 
 console.log("[BetterPrompt BG] Service worker started.");
 
-// 预设的系统提示词
+// 预设的系统提示词（优化后）
 const SYSTEM_PROMPTS = {
-    default: "请将以下用户输入改写为一个优化后的 Prompt，使其更清晰、具体，并包含足够的上下文信息，以便 AI 模型能够更好地理解和执行任务。请专注于提高 Prompt 的质量和效果，直接返回优化后的 Prompt 文本，不要包含任何解释性文字或前缀。",
-    concise: "请将以下用户输入浓缩为一个极其简洁但清晰的 AI Prompt。保留核心意图和关键信息，去除冗余。目标是最大限度地缩短长度，同时确保 AI 能够理解。直接返回优化后的 Prompt 文本，不要包含任何解释。",
-    detailed: "请将以下用户输入扩展并重构成一个高质量、详细的 AI Prompt。仔细分析用户意图，补充必要的背景信息、上下文、示例（如果适用）和约束条件。明确任务目标和期望的输出格式。确保 Prompt 结构清晰、逻辑严谨、信息全面。直接返回优化后的 Prompt 文本，不要包含任何解释性文字或前缀。"
+    default: "请分析以下用户原始输入，优化生成一个高质量的 AI Prompt。要求：语言清晰、逻辑严谨、具备充分上下文和必要示例，能够精准引导 AI 完成任务。直接返回优化后的 Prompt，不添加任何解释或前缀。",
+    concise: "请将以下用户输入提炼成一个极简且精准的 AI Prompt。要求：保留核心意图和关键信息，删除所有冗余内容，使 AI 能迅速抓住重点。直接返回优化后的文本，勿附加任何解释。",
+    detailed: "请对以下用户输入进行深入分析，并扩展生成一个结构完整、详细且高质量的 AI Prompt。要求：明确描述任务目标、背景信息、限制条件及示例（如适用），确保 AI 可以全面理解并准确响应。直接返回优化后的 Prompt，且不得包含任何解释性文字或多余说明。"
 };
 
 // 默认模型
 const DEFAULT_MODEL = "gemini-2.0-flash-lite";
+const DEFAULT_TEMPERATURE = 0.2; // 默认的生成温度
+const DEFAULT_MAX_OUTPUT_TOKENS = 2048; // 默认的最大输出 Token 数
 
 // 监听来自 content script 的消息
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -120,8 +122,8 @@ async function callGeminiApi(apiKey, textToOptimize, systemPrompt, modelName = D
         }],
         // 添加 generationConfig 控制生成行为
         generationConfig: {
-            temperature: 0.3, // 降低温度以获得更一致、聚焦的优化结果
-            maxOutputTokens: 2048 // 设置一个合理的输出上限
+            temperature: DEFAULT_TEMPERATURE, // 使用常量
+            maxOutputTokens: DEFAULT_MAX_OUTPUT_TOKENS // 使用常量
             // topP: 0.95, // 可以使用默认值
             // topK: 40,   // 可以使用默认值
         },

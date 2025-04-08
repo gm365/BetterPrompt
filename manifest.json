@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
     "name": "Better Prompt",
-    "version": "1.5.4",
-    "description": "一键智能优化Prompt提示词，让AI指令更清晰有效，帮您获取更精准、更有价值的回答。",
+    "version": "1.5.5",
+    "description": "借助先进的智能算法，一键优化您的 AI 提问，让指令表达更精准、层次更分明，从而获得更深入、更高价值的回答。",
     "permissions": [
         "storage",
         "activeTab",
