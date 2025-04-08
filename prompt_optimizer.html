@@ -5,11 +5,27 @@
         <title>Better Prompt - Prompt 优化器</title>
         <meta charset="UTF-8">
         <style>
+            :root {
+                --primary-color: #328E6E;
+                --primary-light: rgba(50, 142, 110, 0.2);
+                --primary-dark: #2c7a5e;
+                --secondary-color: #67AE6E;
+                --secondary-light: #90C67C;
+                --accent-color: #E1EEBC;
+                --text-dark: #333;
+                --text-medium: #555;
+                --text-light: #777;
+                --bg-main: #f2f4f3;
+                --bg-panel: #f9fcf9;
+                --border-color: #e0e8e4;
+                --shadow-color: rgba(0, 0, 0, 0.08);
+            }
+
             body {
                 font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
                 padding: 20px;
-                background-color: #f8f9fa;
-                color: #333;
+                background-color: var(--bg-main);
+                color: var(--text-dark);
                 margin: 0;
                 position: relative;
                 overflow-x: hidden;
@@ -23,12 +39,12 @@
             h1 {
                 font-size: 28px;
                 margin: 0 0 16px 0;
-                color: #328E6E;
+                color: var(--primary-color);
                 font-weight: 600;
             }
 
             .description {
-                color: #666;
+                color: var(--text-medium);
                 font-size: 16px;
                 max-width: 800px;
                 margin: 0 auto 20px;
@@ -46,19 +62,20 @@
 
             .panel {
                 flex: 1;
-                background-color: white;
+                background-color: var(--bg-panel);
                 padding: 20px;
                 border-radius: 10px;
-                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+                box-shadow: 0 2px 6px var(--shadow-color);
                 display: flex;
                 flex-direction: column;
+                border: 1px solid var(--border-color);
             }
 
             .panel-title {
                 font-size: 18px;
                 font-weight: 600;
                 margin-bottom: 15px;
-                color: #328E6E;
+                color: var(--primary-color);
                 display: flex;
                 align-items: center;
             }
@@ -71,23 +88,24 @@
             textarea {
                 flex: 1;
                 padding: 15px;
-                border: 1px solid #ddd;
+                border: 1px solid var(--border-color);
                 border-radius: 6px;
                 font-size: 16px;
                 line-height: 1.5;
                 resize: none;
                 font-family: inherit;
                 margin-bottom: 15px;
+                background-color: white;
             }
 
             textarea:focus {
                 outline: none;
-                border-color: #328E6E;
-                box-shadow: 0 0 0 2px rgba(50, 142, 110, 0.2);
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 2px var(--primary-light);
             }
 
             button {
-                background-color: #328E6E;
+                background-color: var(--primary-color);
                 color: white;
                 border: none;
                 border-radius: 6px;
@@ -103,7 +121,7 @@
             }
 
             button:hover {
-                background-color: #2c7a5e;
+                background-color: var(--primary-dark);
             }
 
             button:disabled {
@@ -117,7 +135,7 @@
             }
 
             .copy-button {
-                background-color: #67AE6E;
+                background-color: var(--secondary-color);
             }
 
             .copy-button:hover {
@@ -129,7 +147,7 @@
                 justify-content: space-between;
                 align-items: center;
                 margin-bottom: 15px;
-                color: #666;
+                color: var(--text-medium);
                 font-size: 14px;
             }
 
@@ -137,12 +155,12 @@
                 font-size: 14px;
                 font-weight: 500;
                 margin: 5px 0;
-                color: #666;
+                color: var(--text-medium);
             }
 
             .template-content {
-                background-color: #E1EEBC;
-                border: 1px solid #90C67C;
+                background-color: rgba(225, 238, 188, 0.6);
+                border: 1px solid var(--secondary-light);
                 border-radius: 6px;
                 padding: 12px;
                 font-size: 14px;
@@ -152,20 +170,17 @@
                 white-space: pre-wrap;
                 word-wrap: break-word;
                 margin-bottom: 15px;
+                color: var(--text-dark);
             }
 
-            .model-selector {
-                padding: 6px 10px;
-                border-radius: 4px;
-                border: 1px solid #ddd;
-                font-size: 14px;
-            }
-
+            .model-selector,
             .prompt-selector {
                 padding: 6px 10px;
                 border-radius: 4px;
-                border: 1px solid #ddd;
+                border: 1px solid var(--border-color);
                 font-size: 14px;
+                background-color: white;
+                color: var(--text-dark);
             }
 
             .loading-indicator {
@@ -174,14 +189,16 @@
                 justify-content: center;
                 gap: 10px;
                 padding: 10px;
-                background-color: rgba(255, 255, 255, 0.9);
+                background-color: rgba(249, 252, 249, 0.95);
                 border-radius: 6px;
                 position: absolute;
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                color: #328E6E;
+                color: var(--primary-color);
                 font-weight: 500;
+                box-shadow: 0 2px 8px var(--shadow-color);
+                border: 1px solid var(--border-color);
             }
 
             .loading-indicator.show {
@@ -191,9 +208,9 @@
             .spinner {
                 width: 20px;
                 height: 20px;
-                border: 3px solid rgba(50, 142, 110, 0.3);
+                border: 3px solid rgba(50, 142, 110, 0.2);
                 border-radius: 50%;
-                border-top-color: #328E6E;
+                border-top-color: var(--primary-color);
                 animation: spin 1s ease-in-out infinite;
             }
 
@@ -208,7 +225,7 @@
                 top: 10px;
                 left: 50%;
                 transform: translateX(-50%);
-                background-color: rgba(0, 0, 0, 0.75);
+                background-color: rgba(0, 0, 0, 0.7);
                 color: white;
                 padding: 10px 20px;
                 border-radius: 20px;
@@ -227,26 +244,26 @@
             }
 
             .toast-notification.success {
-                background-color: #67AE6E;
+                background-color: var(--secondary-color);
             }
 
             .toast-notification.error {
-                background-color: #f44336;
+                background-color: #d85c4d;
             }
 
             .toast-notification.info {
-                background-color: #90C67C;
+                background-color: var(--secondary-light);
             }
 
             .toast-notification.warning {
-                background-color: #E1EEBC;
-                color: #328E6E;
+                background-color: rgba(225, 238, 188, 0.9);
+                color: var(--primary-color);
             }
 
             .footer {
                 text-align: center;
                 margin-top: 30px;
-                color: #666;
+                color: var(--text-light);
                 font-size: 14px;
             }
 
