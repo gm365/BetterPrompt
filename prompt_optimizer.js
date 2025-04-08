@@ -58,6 +58,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // 监听优化结果文本框输入，有内容时启用复制按钮
+    optimizedPromptTextarea.addEventListener('input', () => {
+        copyButton.disabled = optimizedPromptTextarea.value.trim() === '';
+    });
+
     // 禁用优化按钮如果文本为空
     originalPromptTextarea.addEventListener('input', () => {
         optimizeButton.disabled = originalPromptTextarea.value.trim() === '';
