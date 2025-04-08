@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const openPromptOptimizerBtn = document.getElementById('openPromptOptimizerBtn');
     const temperatureSlider = document.getElementById('temperatureSlider');
     const temperatureValue = document.getElementById('temperatureValue');
+    const apiKeyAlert = document.getElementById('apiKeyAlert'); // 添加API密钥提示元素引用
     // const statusDiv = document.getElementById('status'); // Remove statusDiv reference
 
     // 从 background.js 获取默认温度值 - 使用消息传递替代getBackgroundPage
@@ -79,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 处理API Key的更改
     apiKeyInput.addEventListener('input', () => {
         debouncedSaveSettings(); // 输入时防抖保存
+        checkApiKey(); // 检查API密钥状态并更新提示
     });
 
     // 处理模型选择更改
@@ -99,6 +101,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /**
+     * 检查API密钥状态并更新提示显示
+     */
+    function checkApiKey() {
+        const apiKey = apiKeyInput.value.trim();
+        if (!apiKey) {
+            apiKeyAlert.style.display = 'flex'; // 显示API密钥未设置提示
+        } else {
+            apiKeyAlert.style.display = 'none'; // 隐藏API密钥未设置提示
+        }
+    }
+
+    /**
      * 加载已保存的设置
      */
     function loadSavedSettings() {
@@ -109,6 +123,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 apiKeyInput.value = result.geminiApiKey;
                 console.log("[BetterPrompt Popup] API 密钥已加载");
             }
+
+            // 检查API密钥状态并更新提示显示
+            checkApiKey();
 
             // 设置选定的提示类型
             const promptType = result.selectedPromptType || 'default';
