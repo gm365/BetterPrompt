@@ -33,28 +33,28 @@
 
             header {
                 text-align: center;
-                margin-bottom: 30px;
+                margin-bottom: 20px;
             }
 
             h1 {
-                font-size: 28px;
-                margin: 0 0 16px 0;
+                font-size: 26px;
+                margin: 0 0 12px 0;
                 color: var(--primary-color);
                 font-weight: 600;
             }
 
             .description {
                 color: var(--text-medium);
-                font-size: 16px;
+                font-size: 14px;
                 max-width: 800px;
-                margin: 0 auto 20px;
-                line-height: 1.5;
+                margin: 0 auto 15px;
+                line-height: 1.4;
             }
 
             .container {
                 display: grid;
-                grid-template-columns: minmax(350px, 30%) 1fr;
-                gap: 30px;
+                grid-template-columns: minmax(400px, 45%) 1fr;
+                gap: 25px;
                 max-width: 1200px;
                 margin: 0 auto;
                 height: auto;
@@ -160,8 +160,8 @@
             .model-info {
                 display: flex;
                 flex-direction: column;
-                gap: 8px;
-                margin-bottom: 10px;
+                gap: 6px;
+                margin-bottom: 8px;
                 color: var(--text-medium);
                 font-size: 14px;
             }
@@ -169,13 +169,13 @@
             .settings-section {
                 background-color: white;
                 border-radius: 8px;
-                padding: 16px;
-                margin-bottom: 20px;
+                padding: 14px;
+                margin-bottom: 15px;
                 border: 1px solid var(--border-color);
             }
 
             .input-section {
-                margin-top: 20px;
+                margin-top: 15px;
                 display: flex;
                 flex-direction: column;
                 flex-grow: 1;
@@ -192,14 +192,14 @@
                 background-color: #f5f9ef;
                 border: 1px solid var(--secondary-light);
                 border-radius: 8px;
-                padding: 14px;
-                font-size: 14px;
-                line-height: 1.6;
-                max-height: 100px;
+                padding: 12px;
+                font-size: 13px;
+                line-height: 1.5;
+                max-height: 80px;
                 overflow-y: auto;
                 white-space: pre-wrap;
                 word-wrap: break-word;
-                margin-bottom: 12px;
+                margin-bottom: 10px;
                 color: var(--text-dark);
             }
 
@@ -322,7 +322,7 @@
                 }
 
                 .panel {
-                    padding: 18px;
+                    padding: 16px;
                 }
 
                 .left-panel,
@@ -330,12 +330,18 @@
                     min-width: unset;
                 }
 
-                .template-content {
-                    max-height: 80px;
-                }
-
                 .optimize-button {
                     height: 44px;
+                }
+
+                h1 {
+                    font-size: 22px;
+                    margin: 0 0 8px 0;
+                }
+
+                .description {
+                    font-size: 13px;
+                    margin-bottom: 10px;
                 }
             }
         </style>
@@ -345,7 +351,7 @@
     <body>
         <header>
             <h1>Better Prompt - Prompt 优化器</h1>
-            <div class="description">在左侧输入您的原始提示词，点击优化按钮后，右侧将显示优化后的结果。三连击空格功能适用于网页中的输入框，而这个页面专为直接编辑和优化提示词而设计。</div>
+            <div class="description">输入原始提示词，一键优化提升效果。可选不同模板和模型。</div>
         </header>
 
         <div class="container">
