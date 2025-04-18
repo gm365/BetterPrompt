@@ -147,6 +147,11 @@ async function callGeminiApi(apiKey, textToOptimize, systemPrompt, modelName = D
             // topP: 0.95, // 可以使用默认值
             // topK: 40,   // 可以使用默认值
         },
+
+        // 移除无法识别的 thinkingConfig
+        // thinkingConfig: {
+        //     thinkingBudget: 1024, // 设置预算，单位为 tokens. 0 = disabled, 1-1024 -> 1024.
+        // },
         // safetySettings: [ ... ] // 可以根据需要添加安全设置
     };
 
