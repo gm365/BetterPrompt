@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Better Prompt",
-    "version": "1.6.5",
+    "version": "1.6.6",
     "description": "借助先进的智能算法，一键优化您的 AI 提问，让指令表达更精准、层次更分明，从而获得更深入、更高价值的回答。",
     "permissions": [
         "storage",

@@ -3,13 +3,16 @@ console.log("[BetterPrompt Optimizer] 脚本加载完成");
 
 // 预设的系统提示词（优化后）
 const SYSTEM_PROMPTS = {
-    /** 通用——高质量、上下文充分 */
-    default: `作为一名专业 Prompt Engineer，请基于以下「用户原始输入」，重写一个高质量 AI Prompt。要求：
+    /** 通用——高质量、上下文充分、避免出现“Prompt”一词 */
+    default: `作为专业 Prompt Engineer，请基于以下「用户原始输入」直接输出 *重写后的 Prompt 内容本身*。要求：
 1. 语言准确清晰、逻辑严谨；
 2. 充分还原并补充必要上下文，使任务目标、期望输出和评估标准一目了然；
 3. 如示例或约束条件有助于完成任务，可主动添加；
 4. 不得引入与原意无关的信息。
-仅返回重写后的 Prompt，本条说明及任何前缀一律省略。`,
+5. 只输出 Prompt 主体，一开头即为任务描述文字，不要出现“Prompt”一词。
+
+Important: Output must start immediately with the rewritten prompt content. Do **NOT** add greetings, explanations, titles, or any extra words before or after the prompt.
+`,
 
     /** 极简——信息密度最高的两句话内 */
     concise: `请将以下「用户原始输入」压缩为 ≤2 句的精准 AI Prompt：保留核心意图与关键约束，删除所有冗余或情绪性描述，确保一读即懂。只输出结果文本，不附加解释。`,
@@ -21,7 +24,10 @@ const SYSTEM_PROMPTS = {
 ③ 输入格式与示例（如适用）  
 ④ 输出要求及评估标准  
 ⑤ 限制条件（风格、长度、语言等）
-确保条理分明、信息完备，能指导 AI 精准完成任务。禁止输出任何额外解释或标注，仅返回最终 Prompt。`
+确保条理分明、信息完备，能指导 AI 精准完成任务。禁止输出任何额外解释或标注，仅返回最终 Prompt。
+
+Important: Output must start immediately with the rewritten prompt content. Do **NOT** add greetings, explanations, titles, or any extra words before or after the prompt.
+`,
 };
 
 // 默认温度值
