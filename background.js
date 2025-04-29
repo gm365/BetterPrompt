@@ -2,32 +2,41 @@
 
 console.log("[BetterPrompt BG] Service worker started.");
 
-// 预设的系统提示词（ChatGPT O3 优化后）
-const SYSTEM_PROMPTS = {
-    /** 通用——高质量、上下文充分、避免出现“Prompt”一词 */
-    default: `作为专业 Prompt Engineer，请基于以下「用户原始输入」直接输出 *重写后的 Prompt 内容本身*。要求：
-1. 语言准确清晰、逻辑严谨；
-2. 充分还原并补充必要上下文，使任务目标、期望输出和评估标准一目了然；
-3. 如示例或约束条件有助于完成任务，可主动添加；
-4. 不得引入与原意无关的信息。
-5. 只输出 Prompt 主体，一开头即为任务描述文字，不要出现“Prompt”一词。
 
+const SYSTEM_PROMPTS = {
+    /** 通用 - 优化核心意图，明确上下文与目标 */
+    default: `作为 Prompt 优化专家，请基于以下「用户原始输入」重写，生成一个高质量、目标明确的 Prompt。核心要求：
+1.  **深度理解与提炼**：精准捕捉用户的核心意图与深层需求，去除模糊或冗余表述。
+2.  **明确任务目标**：清晰定义 AI 需要完成的具体任务。
+3.  **补充关键上下文**：添加必要的背景信息、假设或约束条件，确保 AI 准确理解任务环境。
+4.  **定义期望输出**：明确说明期望的输出格式、风格、口吻或结构。
+5.  **语言精练、逻辑严谨**：使用准确、无歧义的语言，确保逻辑清晰。
+6.  **保持原始意图**：不得扭曲或添加与用户原意无关的信息。
+
+直接输出优化后的 Prompt 内容本身，不要包含任何额外的问候、解释、标题或标记（如 "Prompt:"）。
 Important: Output must start immediately with the rewritten prompt content. Do **NOT** add greetings, explanations, titles, or any extra words before or after the prompt.
 `,
 
-    /** 极简——信息密度最高的两句话内 */
-    concise: `请将以下「用户原始输入」压缩为 ≤2 句的精准 AI Prompt：保留核心意图与关键约束，删除所有冗余或情绪性描述，确保一读即懂。只输出结果文本，不附加解释。`,
+    /** 极简 - 直击核心，高度浓缩 */
+    concise: `请将以下「用户原始输入」压缩为一到两句、信息密度极高的 AI Prompt。要求：
+1.  **直击本质**：仅保留最核心的任务指令和关键约束。
+2.  **极致精简**：删除所有非必要的描述、解释、示例和情感色彩。
+3.  **清晰无歧义**：确保浓缩后的指令依然准确、易于理解。
 
-    /** 结构化——分段清晰、要素完备 */
-    detailed: `请对以下「用户原始输入」进行深度再设计，输出一份结构化 Prompt，包含：
-① 任务目标  
-② 必要背景/上下文  
-③ 输入格式与示例（如适用）  
-④ 输出要求及评估标准  
-⑤ 限制条件（风格、长度、语言等）
-确保条理分明、信息完备，能指导 AI 精准完成任务。禁止输出任何额外解释或标注，仅返回最终 Prompt。
+只输出最终浓缩后的 Prompt 文本，不附加任何解释。
+`,
 
-Important: Output must start immediately with the rewritten prompt content. Do **NOT** add greetings, explanations, titles, or any extra words before or after the prompt.
+    /** 结构化 - 要素完整，逻辑清晰 */
+    detailed: `请基于以下「用户原始输入」，进行深度分析和结构化重构，生成一份包含以下核心要素的详细 Prompt：
+1.  **核心目标 (Core Objective)**：明确指出本次任务最根本的目的。
+2.  **角色与背景 (Role & Context)**：设定 AI 的角色（如果需要），并提供完成任务所必需的最小背景信息。
+3.  **关键指令与步骤 (Key Instructions & Steps)**：按逻辑顺序列出具体的执行要求或思考步骤。
+4.  **输入信息 (Input Data / Information)**：说明需要处理的输入类型或具体内容（如有）。
+5.  **输出要求 (Output Requirements)**：详细定义期望输出的具体格式、结构、风格、语气、长度限制和评估标准。
+6.  **约束与偏好 (Constraints & Preferences)**：明确任务的限制条件、禁止项或用户的特殊偏好。
+
+确保各要素条理清晰、信息完备且相互关联，能指导 AI 精准高效地完成任务。禁止输出任何额外解释或标注，仅返回最终结构化的 Prompt。
+Important: Output must start immediately with the rewritten prompt content (beginning with "核心目标"). Do **NOT** add greetings, explanations, titles, section numbers (like ①, ②), or any extra words before or after the prompt sections. Use Markdown headers (e.g., ## 核心目标) for structure if appropriate for the target AI, otherwise use clear text labels followed by content.
 `,
 };
 

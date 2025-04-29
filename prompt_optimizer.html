@@ -23,18 +23,17 @@
                     <div class="model-info">
                         <div>
                             <span>优化模板:</span>
-                            <select id="promptSelector" class="prompt-selector">
-                                <option value="default">默认模板</option>
-                                <option value="concise">简洁模板</option>
-                                <option value="detailed">扩展模板</option>
-                                <option value="custom">自定义模板</option>
-                            </select>
+                            <div id="templateTabs" class="template-tabs" style="margin-top: 5px;">
+                                <div class="template-tab active" data-value="default">默认模板</div>
+                                <div class="template-tab" data-value="concise">简洁模板</div>
+                                <div class="template-tab" data-value="detailed">扩展模板</div>
+                                <div class="template-tab" data-value="custom">自定义模板</div>
+                            </div>
                         </div>
 
                         <div class="template-title">当前模板内容：</div>
-                        <div class="template-content" id="templateContent">
-                            选择上方的模板类型查看具体内容...
-                        </div>
+                        <textarea id="templateContent" class="template-content" readonly
+                            placeholder="选择自定义模板后，可在此处编辑..."></textarea>
 
                         <!-- 模型选择和温度调节并列显示 -->
                         <div style="display: flex; margin-top: 10px; gap: 15px;">

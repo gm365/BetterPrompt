@@ -188,12 +188,31 @@ button:disabled {
     padding: 12px;
     font-size: 13px;
     line-height: 1.5;
-    max-height: 80px;
+    height: 100px;
     overflow-y: auto;
     white-space: pre-wrap;
     word-wrap: break-word;
     margin-bottom: 10px;
     color: var(--text-dark);
+    font-family: inherit;
+    resize: vertical;
+    transition: all 0.2s ease;
+}
+
+.template-content:read-only {
+    background-color: #f5f9ef;
+    color: var(--text-dark);
+    cursor: default;
+}
+
+.template-content:not(:read-only) {
+    background-color: white;
+    border-color: var(--primary-color);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 0 1px var(--primary-light);
+}
+
+.template-content:focus {
+    outline: none;
 }
 
 .model-selector,
@@ -422,3 +441,54 @@ button:disabled {
 }
 
 /* 结束 从 JS 移过来的样式 */
+
+/* 新增：模板选择标签样式 */
+.template-tabs {
+    display: flex;
+    /* gap: 8px; */
+    /* 移除固定间距 */
+    justify-content: space-between;
+    /* 均匀分布 */
+    flex-wrap: wrap;
+    /* 如果空间不足则换行 */
+}
+
+.template-tab {
+    padding: 8px 10px;
+    /* 轻微调整内边距 */
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    background-color: white;
+    color: var(--text-medium);
+    transition: all 0.2s ease;
+    text-align: center;
+    flex-grow: 1;
+    /* 让标签填充可用空间 */
+    margin: 0 2px;
+    /* 添加微小外边距防止完全挤在一起 */
+}
+
+.template-tab:first-child {
+    margin-left: 0;
+}
+
+.template-tab:last-child {
+    margin-right: 0;
+}
+
+.template-tab:hover {
+    background-color: #f0f4f2;
+    /* 鼠标悬停时的背景色 */
+    border-color: var(--secondary-light);
+}
+
+.template-tab.active {
+    background-color: var(--primary-light);
+    border-color: var(--primary-color);
+    color: var(--primary-dark);
+    font-weight: 500;
+    box-shadow: 0 0 0 1px var(--primary-color);
+    /* 增加一个细微的外框 */
+}
