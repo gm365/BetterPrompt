@@ -398,32 +398,29 @@ document.addEventListener('DOMContentLoaded', () => {
         copyButton.disabled = true;
 
         try {
-            // 将系统提示和用户输入组合
-            const fullPrompt = `${systemPrompt}\n\n用户原始输入：\n\`\`\`\n${originalPrompt}\n\`\`\``;
-            console.log("[BetterPrompt Optimizer] 构建的完整请求 Prompt 长度:", fullPrompt.length);
-
             // 调用 background.js 发送请求
             const response = await new Promise((resolve, reject) => {
                 chrome.runtime.sendMessage({
-                    type: "OPTIMIZE_PROMPT",
-                    payload: {
-                        prompt: fullPrompt,
-                        model: selectedModel,
-                        temperature: temperature,
-                    }
+                    type: "OPTIMIZE_TEXT",
+                    text: originalPrompt,
+                    temperature: temperature
                 }, (response) => {
                     if (chrome.runtime.lastError) {
+                        console.error("[BetterPrompt Optimizer] sendMessage 错误:", chrome.runtime.lastError.message);
                         reject(new Error(chrome.runtime.lastError.message));
-                    } else if (response.error) {
+                    } else if (response && response.error) {
                         reject(new Error(response.error));
-                    } else {
+                    } else if (response && response.optimizedText !== undefined) {
                         resolve(response);
+                    } else {
+                        console.error("[BetterPrompt Optimizer] 收到无效响应:", response);
+                        reject(new Error("后台脚本返回了无效的响应。"));
                     }
                 });
             });
 
             console.log("[BetterPrompt Optimizer] 收到优化结果:", response);
-            optimizedPromptTextarea.value = response.optimizedPrompt.trim();
+            optimizedPromptTextarea.value = response.optimizedText.trim();
             copyButton.disabled = false;
             showToast("提示词优化成功！", "success");
 
