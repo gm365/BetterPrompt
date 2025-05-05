@@ -44,6 +44,9 @@ Important: Output must start immediately with the rewritten prompt content (begi
 let DEFAULT_TEMPERATURE = 0.2; // 先设置一个默认值，后续会从 background.js 获取
 let selectedPromptType = 'default'; // 新增：用于存储当前选中的模板类型
 
+// **** 新增：用于存储模板内容的 Map ****
+let templateContentsMap = {};
+
 /**
  * 根据温度值获取对应的颜色
  * @param {number} temperature - 温度值（0-1）
@@ -138,12 +141,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingIndicator = document.getElementById('loadingIndicator');
     const templateTabs = document.getElementById('templateTabs'); // 新增：获取模板标签容器
     const modelSelector = document.getElementById('modelSelector');
-    const templateContent = document.getElementById('templateContent');
     const temperatureSlider = document.getElementById('temperatureSlider');
     const temperatureValue = document.getElementById('temperatureValue');
+    // **** 新增：获取或创建 Tooltip 元素 ****
+    let templateTooltip = document.getElementById('templateTooltip');
 
-    // 防抖函数引用，用于保存自定义模板输入
-    const debouncedSaveCustomPrompt = debounce(saveCustomPrompt, 500); // 500ms 延迟
+    if (!templateTooltip) {
+        console.error("[BetterPrompt Optimizer] Tooltip element #templateTooltip not found!");
+        // 如果没有找到元素，创建一个
+        templateTooltip = document.createElement('div');
+        templateTooltip.id = 'templateTooltip';
+        templateTooltip.className = 'template-tooltip';
+        document.body.appendChild(templateTooltip);
+    }
 
     // 加载保存的设置
     loadSavedSettings();
@@ -172,15 +182,24 @@ document.addEventListener('DOMContentLoaded', () => {
         optimizeButton.disabled = originalPromptTextarea.value.trim() === '';
     });
 
-    // 新增：监听自定义模板内容区域的输入
-    templateContent.addEventListener('input', () => {
-        if (selectedPromptType === 'custom') {
-            debouncedSaveCustomPrompt();
+    // 当模型改变时保存设置
+    modelSelector.addEventListener('change', function () {
+        // 选择后的视觉反馈更加轻微
+        this.classList.add('active-like');
+
+        // 确保下拉菜单关闭后文本显示正确
+        const selectedOption = this.options[this.selectedIndex];
+        if (selectedOption) {
+            // 如果选项存在，确保显示正确的文本
+            console.log(`[BetterPrompt Optimizer] 模型已更改为: ${selectedOption.text}`);
         }
+
+        // 保存设置
+        saveSettings();
     });
 
-    // 当模型改变时保存设置
-    modelSelector.addEventListener('change', saveSettings);
+    // 为选择器添加轻微的视觉标记，而不是完全的活动样式
+    modelSelector.classList.add('active-like');
 
     /**
      * 更新温度颜色
@@ -241,17 +260,22 @@ document.addEventListener('DOMContentLoaded', () => {
             updateTemperatureColor(temperature);
             console.log("[BetterPrompt Optimizer] 温度值已加载:", temperature);
 
-            // 更新模板内容展示 (放在最后，处理自定义模板的加载)
-            updateTemplateDisplay(selectedPromptType, result.customPrompt);
+            // **** 修改：填充 templateContentsMap ****
+            templateContentsMap = { ...SYSTEM_PROMPTS }; // 复制预设模板
+            templateContentsMap['custom'] = result.customPrompt || "尚未定义自定义模板。"; // 添加自定义模板内容
+            console.log("[BetterPrompt Optimizer] 模板内容 Map 已填充");
 
             // 确保按钮状态正确
             optimizeButton.disabled = originalPromptTextarea.value.trim() === '';
             copyButton.disabled = optimizedPromptTextarea.value.trim() === '';
+
+            // **** 新增：加载完成后为 Tab 添加 Tooltip 事件 ****
+            setupTooltipEvents();
         });
     }
 
     /**
-     * 新增：处理模板标签点击事件
+     * 处理模板标签点击事件
      * @param {Event} event
      */
     function handleTabClick(event) {
@@ -267,15 +291,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // 更新标签的 active 状态
         updateActiveTab(newValue);
 
-        // 更新模板内容显示
-        updateTemplateDisplay(selectedPromptType);
-
         // 保存设置
         saveSettings();
     }
 
     /**
-     * 新增：根据选定的类型更新活动标签的样式
+     * 根据选定的类型更新活动标签的样式
      * @param {string} promptType - 当前选定的模板类型
      */
     function updateActiveTab(promptType) {
@@ -290,46 +311,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * 更新模板内容的显示区域，并控制可编辑状态
-     * @param {string} promptType - 选择的提示类型
-     * @param {string} [customPromptFromStorage] - (可选) 从存储加载的自定义模板内容
-     */
-    function updateTemplateDisplay(promptType, customPromptFromStorage) {
-        console.log("[BetterPrompt Optimizer] 更新模板内容显示:", promptType);
-        if (promptType === 'custom') {
-            templateContent.readOnly = false; // 允许编辑
-            templateContent.placeholder = "在此输入或粘贴您的自定义优化模板...";
-            const savedContent = customPromptFromStorage || '';
-            templateContent.value = savedContent;
-            console.log("[BetterPrompt Optimizer] 自定义模板已启用，内容长度:", savedContent.length);
-            templateContent.style.fontStyle = 'normal'; // 确保是正常样式
-        } else {
-            templateContent.readOnly = true; // 禁止编辑
-            const contentToShow = SYSTEM_PROMPTS[promptType] || "未找到模板内容";
-            templateContent.value = contentToShow;
-            templateContent.placeholder = ""; // 非自定义模式不需要 placeholder
-            templateContent.style.fontStyle = 'normal';
-            console.log("[BetterPrompt Optimizer] 显示模板:", promptType);
-        }
-    }
-
-    /**
-     * 新增：保存自定义模板内容到 storage (防抖调用)
-     */
-    function saveCustomPrompt() {
-        if (selectedPromptType !== 'custom') return; // 仅在自定义模式下保存
-        const customContent = templateContent.value.trim();
-        console.log("[BetterPrompt Optimizer] (Debounced) 正在保存自定义模板内容...");
-        chrome.storage.local.set({ customPrompt: customContent }, () => {
-            if (chrome.runtime.lastError) {
-                console.error("[BetterPrompt Optimizer] 保存自定义模板失败:", chrome.runtime.lastError);
-            } else {
-                console.log("[BetterPrompt Optimizer] 自定义模板已保存。");
-            }
-        });
-    }
-
-    /**
      * 保存当前设置（模型、温度、模板类型，以及自定义模板内容）
      */
     function saveSettings() {
@@ -338,10 +319,10 @@ document.addEventListener('DOMContentLoaded', () => {
             selectedModel: modelSelector.value,
             temperature: parseFloat(temperatureSlider.value),
         };
-        // 如果当前是自定义模板，确保最新内容被包含在待保存对象中
-        // 注意：即使有 debouncedSaveCustomPrompt，这里直接获取一次可确保切换模型等操作时也能保存
-        if (selectedPromptType === 'custom') {
-            settingsToSave.customPrompt = templateContent.value; // 直接获取当前值
+
+        // **** 保留自定义模板的保存，但使用 templateContentsMap 而不是 DOM 元素 ****
+        if (selectedPromptType === 'custom' && templateContentsMap['custom']) {
+            settingsToSave.customPrompt = templateContentsMap['custom'];
         }
 
         console.log("[BetterPrompt Optimizer] 正在保存设置:", settingsToSave);
@@ -370,25 +351,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log(`[BetterPrompt Optimizer] 开始优化。类型: ${selectedPromptType}, 模型: ${selectedModel}, 温度: ${temperature}`);
 
-        // 根据模板类型获取系统提示
-        if (selectedPromptType === 'custom') {
-            systemPrompt = templateContent.value.trim(); // 直接从 textarea 获取自定义模板内容
-            if (!systemPrompt) {
-                showToast("自定义模板内容为空，请先输入模板！", "warning");
+        // **** 修改：从 templateContentsMap 获取模板内容 ****
+        systemPrompt = templateContentsMap[selectedPromptType];
+
+        // 检查模板内容是否存在且有效
+        if (!systemPrompt) {
+            if (selectedPromptType === 'custom') {
+                showToast("自定义模板内容为空，请先编辑自定义模板！", "warning");
                 console.warn("[BetterPrompt Optimizer] 自定义模板为空，已中止优化。");
-                // 可选：回退到默认模板
-                // systemPrompt = SYSTEM_PROMPTS['default'];
-                // showToast("自定义模板为空，已使用默认模板进行优化。", "info");
-                return; // 或者直接阻止
-            }
-            console.log("[BetterPrompt Optimizer] 使用自定义模板进行优化，长度:", systemPrompt.length);
-        } else {
-            systemPrompt = SYSTEM_PROMPTS[selectedPromptType];
-            if (!systemPrompt) {
+            } else {
                 console.error("未找到对应的预设系统提示:", selectedPromptType);
                 showToast("选择的预设模板无效！", "error");
-                return;
             }
+            return;
         }
 
         // 显示加载指示器等 UI 操作
@@ -403,7 +378,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 chrome.runtime.sendMessage({
                     type: "OPTIMIZE_TEXT",
                     text: originalPrompt,
-                    temperature: temperature
+                    temperature: temperature,
+                    systemPrompt: systemPrompt // 添加 systemPrompt 字段
                 }, (response) => {
                     if (chrome.runtime.lastError) {
                         console.error("[BetterPrompt Optimizer] sendMessage 错误:", chrome.runtime.lastError.message);
@@ -522,5 +498,101 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 500);
 
         }, duration);
+    }
+
+    // --- 新增：Tooltip 相关函数 ---
+
+    /**
+     * 为所有模板标签添加 Tooltip 事件监听
+     */
+    function setupTooltipEvents() {
+        const tabs = templateTabs.querySelectorAll('.template-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('mouseenter', handleTooltipMouseEnter);
+            tab.addEventListener('mouseleave', handleTooltipMouseLeave);
+            tab.addEventListener('mousemove', positionTooltip);
+        });
+        console.log("[BetterPrompt Optimizer] Tooltip 事件监听器已设置");
+    }
+
+    /**
+     * 鼠标进入标签时的处理函数
+     * @param {MouseEvent} event
+     */
+    function handleTooltipMouseEnter(event) {
+        if (!templateTooltip) return;
+
+        const templateKey = event.target.dataset.value;
+        const content = templateContentsMap[templateKey];
+
+        if (content) {
+            templateTooltip.textContent = content;
+            // 立即显示，然后添加 show 类以触发淡入
+            templateTooltip.style.display = 'block';
+            requestAnimationFrame(() => { // 确保 display: block 生效后再加 class
+                templateTooltip.classList.add('show');
+            });
+            positionTooltip(event); // 初始定位
+        } else {
+            templateTooltip.textContent = '无法加载此模板的内容';
+            templateTooltip.style.display = 'block';
+            requestAnimationFrame(() => {
+                templateTooltip.classList.add('show');
+            });
+            positionTooltip(event);
+        }
+    }
+
+    /**
+     * 鼠标离开标签时的处理函数
+     */
+    function handleTooltipMouseLeave() {
+        if (!templateTooltip) return;
+        templateTooltip.classList.remove('show');
+        // 在过渡结束后隐藏，避免闪烁
+        templateTooltip.addEventListener('transitionend', () => {
+            if (!templateTooltip.classList.contains('show')) { // 再次检查，防止快速移入移出问题
+                templateTooltip.style.display = 'none';
+            }
+        }, { once: true });
+        // 设置一个备用隐藏，以防 transitionend 不触发
+        setTimeout(() => {
+            if (!templateTooltip.classList.contains('show')) {
+                templateTooltip.style.display = 'none';
+            }
+        }, 200); // 略长于 transition 时间
+    }
+
+    /**
+     * 定位 Tooltip
+     * @param {MouseEvent} event
+     */
+    function positionTooltip(event) {
+        if (!templateTooltip || templateTooltip.style.display === 'none') return;
+
+        const offset = 12; // 鼠标指针与 Tooltip 左上角的偏移量
+        let x = event.clientX + offset;
+        let y = event.clientY + offset;
+        const tooltipRect = templateTooltip.getBoundingClientRect(); // 获取实际渲染尺寸
+
+        // 防止 Tooltip 超出窗口右边界
+        if (x + tooltipRect.width > window.innerWidth) {
+            x = window.innerWidth - tooltipRect.width - offset;
+        }
+        // 防止 Tooltip 超出窗口下边界
+        if (y + tooltipRect.height > window.innerHeight) {
+            y = event.clientY - tooltipRect.height - offset; // 移到鼠标上方
+        }
+        // 防止 Tooltip 超出窗口左边界
+        if (x < offset) { // 稍微留点边距
+            x = offset;
+        }
+        // 防止 Tooltip 超出窗口上边界
+        if (y < offset) {
+            y = offset;
+        }
+
+        templateTooltip.style.left = `${x}px`;
+        templateTooltip.style.top = `${y}px`;
     }
 }); 

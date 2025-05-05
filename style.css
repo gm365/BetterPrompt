@@ -168,10 +168,9 @@ button:disabled {
 }
 
 .input-section {
-    margin-top: 15px;
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
 }
 
 .template-title {
@@ -445,50 +444,738 @@ button:disabled {
 /* 新增：模板选择标签样式 */
 .template-tabs {
     display: flex;
-    /* gap: 8px; */
-    /* 移除固定间距 */
-    justify-content: space-between;
-    /* 均匀分布 */
-    flex-wrap: wrap;
-    /* 如果空间不足则换行 */
+    gap: 6px;
+    background-color: rgba(240, 245, 240, 0.5);
+    border-radius: 12px;
+    padding: 6px;
+    border: 1px solid var(--border-color);
+    margin-top: 8px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .template-tab {
-    padding: 8px 10px;
-    /* 轻微调整内边距 */
+    flex: 1;
+    padding: 12px 8px;
+    background-color: rgba(255, 255, 255, 0.8);
     border: 1px solid var(--border-color);
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
-    background-color: white;
     color: var(--text-medium);
     transition: all 0.2s ease;
+    position: relative;
     text-align: center;
-    flex-grow: 1;
-    /* 让标签填充可用空间 */
-    margin: 0 2px;
-    /* 添加微小外边距防止完全挤在一起 */
-}
-
-.template-tab:first-child {
-    margin-left: 0;
-}
-
-.template-tab:last-child {
-    margin-right: 0;
+    font-weight: 500;
+    outline: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .template-tab:hover {
-    background-color: #f0f4f2;
-    /* 鼠标悬停时的背景色 */
+    background-color: white;
+    color: var(--primary-dark);
     border-color: var(--secondary-light);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
 }
 
 .template-tab.active {
-    background-color: var(--primary-light);
+    background-color: var(--primary-color);
+    /* 使用更深的主色调 */
+    color: white;
+    /* 白色文字，对比清晰 */
     border-color: var(--primary-color);
-    color: var(--primary-dark);
+    /* 边框颜色与背景一致 */
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(50, 142, 110, 0.2);
+    /* 可以用主色调的阴影 */
+    transform: none;
+    /* 移除之前的上下位移效果 */
+}
+
+/* 移除或注释掉原来的菱形箭头样式 */
+.template-tab.active::after {
+    display: none;
+    /* 直接隐藏伪元素 */
+    /*
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: calc(50% - 6px);
+    width: 12px;
+    height: 12px;
+    background-color: var(--primary-light);
+    border-right: 1px solid var(--primary-color);
+    border-bottom: 1px solid var(--primary-color);
+    transform: rotate(45deg);
+    z-index: 1;
+    */
+}
+
+.group-title {
+    font-size: 15px;
     font-weight: 500;
+    color: var(--text-medium);
+    margin: 0 0 10px 0;
+    position: relative;
+    padding-left: 2px;
+}
+
+/* 调整设置组之间的间距 */
+.settings-group {
+    margin-bottom: 20px;
+}
+
+.settings-group:last-child {
+    margin-bottom: 0;
+}
+
+/* 控制组样式 */
+.controls-group {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 20px;
+    align-items: start;
+    /* margin-top: 2px; */
+}
+
+.control-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.control-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-medium);
+    margin-bottom: 4px;
+}
+
+/* 下拉选择器样式 */
+.select-wrapper {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.select-wrapper:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.styled-select {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 14px;
+    border: none;
+    background-color: transparent;
+    appearance: none;
+    cursor: pointer;
+    color: var(--text-dark);
+    outline: none;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%23328E6E' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+
+/* 滑块容器样式 */
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: white;
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+
+/* 滑块样式 */
+#temperatureSlider {
+    -webkit-appearance: none;
+    flex: 1;
+    height: 5px;
+    border-radius: 5px;
+    background: linear-gradient(to right,
+            rgba(92, 139, 246, 0.7) 0%,
+            rgba(131, 177, 250, 0.7) 20%,
+            rgba(176, 231, 102, 0.7) 40%,
+            rgba(250, 222, 95, 0.7) 60%,
+            rgba(249, 148, 82, 0.7) 80%,
+            rgba(239, 112, 112, 0.7) 100%);
+    outline: none;
+}
+
+#temperatureSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--primary-color);
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s;
+}
+
+#temperatureSlider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+.temperature-value {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 15px;
+    min-width: 30px;
+    text-align: center;
+}
+
+.help-text {
+    font-size: 11px;
+    color: var(--text-light);
+    text-align: center;
+    margin-top: 5px;
+}
+
+/* 自适应媒体查询 */
+@media (max-width: 768px) {
+    .controls-group {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .settings-panel {
+        padding: 18px;
+    }
+}
+
+/* 新增：隐藏原始的模板内容显示区域 */
+.template-title,
+#templateContent {
+    display: none !important;
+    /* 强制隐藏 */
+}
+
+/* 新增：调整原始提示词区域以利用释放的空间 */
+.input-section {
+    flex-grow: 1;
+    /* 让包含原始提示词的区域增长以填充可用空间 */
+    display: flex;
+    /* 确保内部元素可以正确布局 */
+    flex-direction: column;
+}
+
+#originalPrompt {
+    flex-grow: 1;
+    /* 让原始提示词文本框本身也增长 */
+    /* 可以根据需要设置最小高度 */
+    min-height: 150px;
+    resize: vertical;
+    /* 允许用户垂直调整大小 */
+}
+
+/* 新增：模板内容 Tooltip 样式 */
+.template-tooltip {
+    position: fixed;
+    /* 使用 fixed 避免被父容器裁剪和滚动影响 */
+    background-color: rgba(40, 40, 40, 0.9);
+    /* 深色背景，更易读 */
+    color: #f0f0f0;
+    /* 浅灰色文字 */
+    padding: 10px 14px;
+    /* 稍微增大内边距 */
+    border-radius: 6px;
+    font-size: 13px;
+    /* 保持字体大小一致性 */
+    line-height: 1.5;
+    /* 改善多行文本可读性 */
+    z-index: 1050;
+    /* 确保在顶层，高于其他元素 */
+    display: none;
+    /* 初始隐藏 */
+    max-width: 350px;
+    /* 限制最大宽度 */
+    white-space: pre-wrap;
+    /* 保留模板内容的换行和空格 */
+    pointer-events: none;
+    /* 避免 tooltip 干扰鼠标事件 */
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    /* 添加阴影增加层次感 */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* 可选：添加细微边框 */
+    opacity: 0;
+    /* 初始透明，配合 JS 做淡入效果 */
+    transition: opacity 0.15s ease-in-out;
+    /* 添加淡入过渡 */
+}
+
+.template-tooltip.show {
+    display: block;
+    /* 显示 */
+    opacity: 1;
+    /* 完全不透明 */
+}
+
+/* 新增: 模型和温度控件的水平布局容器 */
+.model-temperature-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 15px;
+    margin-bottom: 8px;
+}
+
+/* 紧凑型设置项 */
+.compact-setting-item {
+    position: relative;
+    padding-top: 10px;
+    margin-bottom: 5px;
+}
+
+/* 模型设置占用更多空间 */
+.model-setting {
+    flex: 3;
+}
+
+/* 温度设置占用较少空间 */
+.temperature-setting {
+    flex: 2;
+}
+
+/* 浮动标签样式 */
+.floating-label {
+    font-size: 11px;
+    color: var(--text-medium);
+    position: absolute;
+    top: -5px;
+    left: 5px;
+    background: white;
+    padding: 0 4px;
+    z-index: 1;
+}
+
+/* 模型选择器包装容器 */
+.model-selector-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    overflow: hidden;
+    /* 确保下拉菜单打开时不会超出边界 */
+}
+
+/* 紧凑型下拉框 */
+.compact-selector {
+    height: 30px;
+    padding: 4px 12px;
+    /* 增加水平内边距，使文本与边缘距离更合适 */
+    width: 100%;
+    margin-top: 0;
+    /* 添加与标签按钮相似的视觉风格 */
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: white;
+    color: var(--text-dark);
+    /* 使用深色文本，提高可读性 */
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    /* 修改默认的下拉箭头样式 */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%23555' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    /* 调整箭头位置 */
+    background-size: 14px;
+    /* 缩小箭头大小 */
+    padding-right: 30px;
+    /* 调整右侧内边距，确保文本不被箭头遮挡 */
+    text-align: left;
+}
+
+/* 下拉框选中态样式 */
+.compact-selector.active-like {
+    background-color: white;
+    border-color: var(--primary-color);
+    color: var(--text-dark);
+    font-weight: 500;
+    /* 恢复适度的加粗以指示这是选中状态 */
+    box-shadow: 0 0 0 1px rgba(50, 142, 110, 0.2);
+    /* 使用半透明阴影，效果更微妙 */
+}
+
+/* 下拉框悬停和聚焦状态 */
+.compact-selector:hover {
+    background-color: #f8f8f8;
+    /* 更微妙的悬停背景色 */
+    border-color: var(--border-color);
+}
+
+.compact-selector:focus {
+    outline: none;
+    border-color: var(--primary-color);
     box-shadow: 0 0 0 1px var(--primary-color);
-    /* 增加一个细微的外框 */
+    color: var(--text-dark);
+    background-color: white;
+}
+
+/* 改变下拉菜单样式（针对Chrome、Firefox等） */
+select.compact-selector {
+    background-color: white !important;
+    text-overflow: ellipsis;
+    /* 如果文本过长，显示省略号 */
+    white-space: nowrap;
+    /* 防止文本换行 */
+    overflow: hidden;
+    /* 隐藏溢出文本 */
+}
+
+/* 下拉菜单样式自定义 */
+/* 注意：这些样式需要JavaScript支持才能生效，但可以尝试影响浏览器默认样式 */
+.compact-selector option {
+    padding: 8px 12px;
+    background-color: white;
+    color: var(--text-dark);
+    font-size: 14px;
+}
+
+/* 改变下拉菜单样式（针对Chrome、Firefox等） */
+select.compact-selector {
+    background-color: white !important;
+}
+
+/* 为不同浏览器设置下拉菜单的样式 */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+
+    /* Chrome和Safari */
+    select.compact-selector {
+        border-radius: 6px;
+    }
+
+    /* 下拉菜单打开时的样式 */
+    select.compact-selector:focus {
+        border-color: var(--primary-color);
+    }
+}
+
+/* 添加视觉指示，使其看起来更像按钮组的一部分 */
+.model-setting::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    /* 确保不干扰选择器的点击事件 */
+    border-radius: 6px;
+    z-index: 0;
+}
+
+/* 紧凑型温度滑块容器 */
+.compact-slider-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    height: 30px;
+}
+
+/* 自定义滑块样式 */
+.compact-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: transparent;
+    width: 100%;
+    outline: none;
+}
+
+/* 复用现有的滑块轨道样式 */
+.compact-slider::-webkit-slider-runnable-track {
+    background: linear-gradient(to right,
+            rgba(92, 139, 246, 0.7) 0%,
+            rgba(131, 177, 250, 0.7) 20%,
+            rgba(176, 231, 102, 0.7) 40%,
+            rgba(250, 222, 95, 0.7) 60%,
+            rgba(249, 148, 82, 0.7) 80%,
+            rgba(239, 112, 112, 0.7) 100%);
+    height: 4px;
+    border-radius: 3px;
+}
+
+/* Firefox 滑块轨道样式 */
+.compact-slider::-moz-range-track {
+    background: linear-gradient(to right,
+            rgba(92, 139, 246, 0.7) 0%,
+            rgba(131, 177, 250, 0.7) 20%,
+            rgba(176, 231, 102, 0.7) 40%,
+            rgba(250, 222, 95, 0.7) 60%,
+            rgba(249, 148, 82, 0.7) 80%,
+            rgba(239, 112, 112, 0.7) 100%);
+    height: 4px;
+    border-radius: 3px;
+}
+
+/* MS Edge 滑块轨道样式 */
+.compact-slider::-ms-track {
+    background: linear-gradient(to right,
+            rgba(92, 139, 246, 0.7) 0%,
+            rgba(131, 177, 250, 0.7) 20%,
+            rgba(176, 231, 102, 0.7) 40%,
+            rgba(250, 222, 95, 0.7) 60%,
+            rgba(249, 148, 82, 0.7) 80%,
+            rgba(239, 112, 112, 0.7) 100%);
+    height: 4px;
+    border-radius: 3px;
+}
+
+/* 复用现有的滑块样式 */
+.compact-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--primary-color);
+    cursor: pointer;
+    margin-top: -6px;
+}
+
+/* Firefox 滑块样式 */
+.compact-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--primary-color);
+    cursor: pointer;
+}
+
+/* MS Edge 滑块样式 */
+.compact-slider::-ms-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--primary-color);
+    cursor: pointer;
+    margin-top: 0;
+}
+
+/* 温度值简化显示 */
+.compact-temperature-value {
+    min-width: 22px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+/* 设置面板基础样式 */
+.settings-panel {
+    background-color: var(--bg-panel);
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04);
+    padding: 24px;
+    margin-bottom: 28px;
+    border: 1px solid rgba(200, 220, 210, 0.3);
+    transition: all 0.25s ease;
+}
+
+/* 标题区域样式 */
+.settings-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.settings-header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -10px;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(to right, var(--primary-color), var(--primary-light));
+    border-radius: 3px;
+}
+
+.settings-icon {
+    color: var(--primary-color);
+    font-size: 24px;
+    margin-right: 12px;
+    background-color: var(--primary-light);
+    border-radius: 50%;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+/* 内容区域样式 */
+.settings-content {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+/* 优化设置区域紧凑化调整 */
+
+/* 1. 减少面板的上下内边距 */
+.settings-panel {
+    padding-top: 18px;
+    /* 原为 24px */
+    padding-bottom: 18px;
+    /* 原为 24px */
+    margin-bottom: 20px;
+    /* 原为 28px */
+}
+
+/* 2. 减少标题区域的下边距和装饰线空间 */
+.settings-header {
+    margin-bottom: 15px;
+    /* 原为 20px */
+}
+
+.settings-header::after {
+    bottom: -8px;
+    /* 原为 -10px */
+    height: 2px;
+    /* 原为 3px */
+}
+
+/* 3. 减小设置内容区域的元素间距 */
+.settings-content {
+    gap: 15px;
+    /* 原为 22px */
+}
+
+/* 4. 减少设置分组的下边距和组标题字体/间距 */
+.settings-group {
+    margin-bottom: 10px;
+    /* 原为 20px */
+}
+
+.group-title {
+    font-size: 14px;
+    /* 原为 15px */
+    margin-bottom: 8px;
+    /* 原为 10px */
+}
+
+/* 5. 优化模板选项卡的内边距和容器间距 */
+.template-tabs {
+    padding: 4px;
+    /* 原为 6px */
+    margin-top: 4px;
+    /* 原为 8px */
+    gap: 4px;
+    /* 原为 6px */
+}
+
+.template-tab {
+    padding-top: 8px;
+    /* 原为 12px */
+    padding-bottom: 8px;
+    /* 原为 12px */
+    font-size: 13px;
+    /* 原为 14px */
+}
+
+/* 调整激活状态下箭头指示器的位置 */
+.template-tab.active::after {
+    display: none;
+    /* 直接隐藏伪元素 */
+}
+
+/* 6. 减少控件组的上边距和内部间距 */
+.controls-group {
+    margin-top: 15px;
+    /* 原为 25px */
+    gap: 15px;
+    /* 原为 20px */
+}
+
+/* 7. 减少控件项的内部间距和标签字体/间距 */
+.control-item {
+    gap: 5px;
+    /* 原为 8px */
+}
+
+.control-label {
+    font-size: 13px;
+    /* 原为 14px */
+    margin-bottom: 2px;
+    /* 原为 4px */
+}
+
+/* 8. 优化下拉选择器的高度和内边距 */
+.select-wrapper {
+    border-radius: 8px;
+    /* 原为 10px */
+}
+
+.styled-select {
+    padding-top: 8px;
+    /* 原为 12px */
+    padding-bottom: 8px;
+    /* 原为 12px */
+    font-size: 13px;
+    /* 原为 14px */
+}
+
+/* 9. 优化滑块容器的高度和内边距 */
+.slider-container {
+    padding-top: 6px;
+    /* 原为 10px */
+    padding-bottom: 6px;
+    /* 原为 10px */
+    border-radius: 8px;
+    /* 原为 10px */
+}
+
+#temperatureSlider::-webkit-slider-thumb {
+    width: 18px;
+    /* 原为 20px */
+    height: 18px;
+    /* 原为 20px */
+}
+
+.temperature-value {
+    font-size: 14px;
+    /* 原为 15px */
+}
+
+/* 10. 优化帮助文本的字体和间距 */
+.help-text {
+    font-size: 10px;
+    /* 原为 11px */
+    margin-top: 3px;
+    /* 原为 5px */
+}
+
+/* 响应式调整：在较小屏幕上可能需要恢复部分间距以保证可操作性 */
+@media (max-width: 768px) {
+    .settings-panel {
+        padding: 15px;
+        /* 保持适当内边距 */
+    }
+
+    /* 可根据需要在小屏幕上调整其他间距或字体大小 */
 }

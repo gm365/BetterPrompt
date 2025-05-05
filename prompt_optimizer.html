@@ -16,55 +16,52 @@
 
         <div class="container">
             <div class="panel left-panel">
-                <div class="settings-section">
-                    <div class="panel-title" style="margin-bottom: 10px; font-size: 16px;">
-                        <span class="material-icons panel-icon">settings</span>优化设置
-                    </div>
-                    <div class="model-info">
-                        <div>
-                            <span>优化模板:</span>
-                            <div id="templateTabs" class="template-tabs" style="margin-top: 5px;">
-                                <div class="template-tab active" data-value="default">默认模板</div>
-                                <div class="template-tab" data-value="concise">简洁模板</div>
-                                <div class="template-tab" data-value="detailed">扩展模板</div>
-                                <div class="template-tab" data-value="custom">自定义模板</div>
+                <section class="settings-panel">
+                    <header class="settings-header">
+                        <span class="settings-icon material-icons">settings</span>
+                        <h2 class="settings-title">优化设置</h2>
+                    </header>
+                    <div class="settings-content">
+                        <div class="settings-group">
+                            <h3 class="group-title">优化模板</h3>
+                            <div id="templateTabs" class="template-tabs" role="tablist" aria-label="模板选项">
+                                <button class="template-tab active" role="tab" aria-selected="true"
+                                    data-value="default">默认模板</button>
+                                <button class="template-tab" role="tab" aria-selected="false"
+                                    data-value="concise">简洁模板</button>
+                                <button class="template-tab" role="tab" aria-selected="false"
+                                    data-value="detailed">扩展模板</button>
+                                <button class="template-tab" role="tab" aria-selected="false"
+                                    data-value="custom">自定义模板</button>
                             </div>
                         </div>
 
-                        <div class="template-title">当前模板内容：</div>
-                        <textarea id="templateContent" class="template-content" readonly
-                            placeholder="选择自定义模板后，可在此处编辑..."></textarea>
-
-                        <!-- 模型选择和温度调节并列显示 -->
-                        <div style="display: flex; margin-top: 10px; gap: 15px;">
-                            <!-- 左侧：模型选择 -->
-                            <div style="flex: 1;">
-                                <span>使用模型:</span>
-                                <select id="modelSelector" class="model-selector" style="margin-top: 5px;">
-                                    <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
-                                    <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-                                    <option value="gemini-2.5-flash-preview-04-17" selected>Gemini 2.5 Flash</option>
-                                    <option value="gemini-2.5-pro-exp-03-25">Gemini 2.5 Pro</option>
-                                </select>
+                        <div class="settings-group controls-group">
+                            <div class="control-item model-control">
+                                <label for="modelSelector" class="control-label">使用模型</label>
+                                <div class="select-wrapper">
+                                    <select id="modelSelector" class="styled-select">
+                                        <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
+                                        <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                                        <option value="gemini-2.5-flash-preview-04-17" selected>Gemini 2.5 Flash
+                                        </option>
+                                        <option value="gemini-2.5-pro-exp-03-25">Gemini 2.5 Pro</option>
+                                    </select>
+                                </div>
                             </div>
 
-                            <!-- 右侧：温度调节 -->
-                            <div style="flex: 1;">
-                                <span>温度:</span>
-                                <div style="display: flex; align-items: center; gap: 8px; margin-top: 5px;">
-                                    <input type="range" id="temperatureSlider" min="0" max="1" step="0.1" value="0.2"
-                                        class="model-selector" style="margin: 0; flex: 1;">
-                                    <div id="temperatureValue"
-                                        style="min-width: 30px; text-align: center; font-size: 15px; font-weight: 500; color: var(--primary-color); background: #f5f9ef; padding: 3px 5px; border-radius: 4px;">
-                                        0.2</div>
+                            <div class="control-item temperature-control">
+                                <label for="temperatureSlider" class="control-label">温度</label>
+                                <div class="slider-container">
+                                    <input type="range" id="temperatureSlider" min="0" max="1" step="0.1" value="0.1"
+                                        aria-valuemin="0" aria-valuemax="1" aria-valuenow="0.1">
+                                    <span id="temperatureValue" class="temperature-value">0.1</span>
                                 </div>
-                                <div style="font-size: 11px; color: var(--text-light); margin-top: 2px;">
-                                    低值 = 稳定内容，高值 = 创新内容
-                                </div>
+                                <span class="help-text">低值=稳定内容，高值=创新内容</span>
                             </div>
                         </div>
                     </div>
-                </div>
+                </section>
 
                 <div class="input-section">
                     <div class="panel-title" style="margin-bottom: 10px; font-size: 16px;">
@@ -99,6 +96,8 @@
         </div>
 
         <div class="footer">BetterPrompt - 让您的提示词更高效</div>
+
+        <div id="templateTooltip" class="template-tooltip"></div>
 
         <script src="prompt_optimizer.js"></script>
     </body>
