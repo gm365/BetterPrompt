@@ -15,6 +15,8 @@ const SYSTEM_PROMPTS = {
 直接输出优化后的 Prompt 内容本身，不要包含任何额外的问候、解释、标题或标记（如 "Prompt:"）。
 
 Important: Output must start immediately with the rewritten prompt content. Do **NOT** add greetings, explanations, titles, or any extra words before or after the prompt.
+
+Always reponse in 中文。
 `,
 
     /** 极简 - 直击核心，高度浓缩 */
@@ -38,6 +40,8 @@ Important: Output must start immediately with the rewritten prompt content. Do *
 确保各要素条理清晰、信息完备且相互关联，能指导 AI 精准高效地完成任务。禁止输出任何额外解释或标注，仅返回最终结构化的 Prompt。
 
 Important: Output must start immediately with the rewritten prompt content (beginning with "核心目标"). Do **NOT** add greetings, explanations, titles, section numbers (like ①, ②), or any extra words before or after the prompt sections. Use Markdown headers (e.g., ## 核心目标) for structure if appropriate for the target AI, otherwise use clear text labels followed by content.
+
+Always reponse in 中文。
 `,
 };
 
