@@ -36,6 +36,7 @@ Important: Output must start immediately with the rewritten prompt content. Do *
 6.  **约束与偏好 (Constraints & Preferences)**：明确任务的限制条件、禁止项或用户的特殊偏好。
 
 确保各要素条理清晰、信息完备且相互关联，能指导 AI 精准高效地完成任务。禁止输出任何额外解释或标注，仅返回最终结构化的 Prompt。
+
 Important: Output must start immediately with the rewritten prompt content (beginning with "核心目标"). Do **NOT** add greetings, explanations, titles, section numbers (like ①, ②), or any extra words before or after the prompt sections. Use Markdown headers (e.g., ## 核心目标) for structure if appropriate for the target AI, otherwise use clear text labels followed by content.
 `,
 };
