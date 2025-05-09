@@ -6,6 +6,17 @@
 
 **详细描述:** 无论您是在与 ChatGPT、Claude 还是其他 AI 模型交互，BetterPrompt 都能提升您的 Prompt 工程效率。遇到不够理想的 Prompt 时，只需在输入完毕后，连续按下三次空格，即可调用 Gemini API 进行智能优化。此外，插件还提供了一个独立的"Prompt 优化器"页面，您可以输入或粘贴 Prompt，选择不同的优化策略（如简洁化、详细化）和 Gemini 模型（Flash Lite 或 Flash），生成更高质量的提示词。BetterPrompt 旨在简化 Prompt 优化流程，激发更多创意可能。
 
+**🎉 好消息！独立优化器网站已上线！🎉**
+
+现在，您除了可以使用 Chrome 插件外，还可以直接访问我们的独立网站 [https://bp.upsui.com/](https://bp.upsui.com/) 在线优化您的 Prompt！无需下载和安装任何插件，直接在网页上即可体验便捷的 Prompt 优化服务。
+
+
+![BetterPrompt 独立网站](/images/website.avif)
+
+*上图为BetterPrompt 独立网站截图
+
+
+
 **目标用户:**
 *   经常使用 ChatGPT、Claude、Gemini 等大型语言模型的用户。
 *   希望快速优化和改进现有 Prompt 的内容创作者、开发者、研究人员和学生。
@@ -80,7 +91,7 @@ BetterPrompt 需要以下权限才能正常工作：
 
 ![BetterPrompt 优化效果演示2](/images/优化效果2.avif)
 
-*上图展示了使用 Prompt 优化器页面优化提示词：“如何高效搜索质数”的效果*
+*上图展示了使用 Prompt 优化器页面优化提示词："如何高效搜索质数"的效果*
 
 
 
